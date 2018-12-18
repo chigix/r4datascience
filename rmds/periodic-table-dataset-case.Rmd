@@ -2,7 +2,7 @@
 title: "Periodic Table Dataset Case"
 author: "Richard Lea <chigix@zoho.com>"
 date: "2018/12/12"
-output: html_document
+output: html_notebook
 ---
 
 ```{r setup, include=FALSE}
@@ -17,7 +17,8 @@ download.file(url = "http://ismayc.github.io/periodic-table-data.csv",
 Loading Data
 
 ```{r}
-periodic_table <- read.csv("../data-raw/periodic-table-data.csv", stringsAsFactors = FALSE)
+periodic_table <-
+  read.csv("../data-raw/periodic-table-data.csv", stringsAsFactors = FALSE)
 periodic_table
 ```
 
@@ -48,7 +49,7 @@ class(friend_ages)
 * About the indicator of `L` on the difference between `integer` and `numeric`
 
 ```{r}
-class(c(25,37,22,30))
+class(c(25, 37, 22, 30))
 class(seq(from = 0, to = 100, by = 2))
 class(seq(from = 0L, to = 100L, by = 2L))
 seq(from = 0L, to = 100L)
@@ -66,7 +67,7 @@ Create Data frame with vectors previously created:
 ```{r}
 friends <- data.frame(names = friend_names,
                       ages = friend_ages,
-                      stringsAsFactors = FALSE`)
+                      stringsAsFactors = FALSE)
 friends
 ```
 `class(friends)` : `r class(friends)`
@@ -88,8 +89,8 @@ table(factor(periodic_table$block, levels = c("s", 'p', "d", "f")))
 seq(from = 2, to = 8)
 seq(from = 2, to = 8) + 5L
 periodic_table$name[10:20]
-periodic_table$name[c(10,12)]
-periodic_table$name[10:20][-c(1,2)]
+periodic_table$name[c(10, 12)]
+periodic_table$name[10:20][-c(1, 2)]
 ```
 
 ### Filtering
@@ -100,7 +101,7 @@ friend_names[friend_names %in% c("Ayanami")]
 ```
 
 ```{r}
-periodic_table[(periodic_table$name %in% c("Hydrogen", "Oxygen")), 
+periodic_table[(periodic_table$name %in% c("Hydrogen", "Oxygen")),
                c("atomic_weight", "state_at_stp")]
 ```
 
