@@ -18,6 +18,20 @@ Although I have set `Packrat` automatically snapshot changes, it seems that chan
 
 If you load this repository as a R project into your R studio but not see packrat automatically restoring package dependencies, follow the commands below:
 
-``` bash
-$ ls
+``` r
+packrat::restore()
+```
+
+Once new packages installed,
+
+``` r
+packrat::snapshot()
+```
+
+Check and cleaning up actually unused package at the commit or push time,
+
+``` r
+packrat::status()
+
+packrat::clean()
 ```
