@@ -1,0 +1,102 @@
+---
+title: "ggplot Diamonds Case"
+author: "Richard Lea"
+date: "2018/12/16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+require(ggplot2)
+require(dplyr)
+```
+
+## DataSet
+
+```{r diamonds}
+ggplot2::diamonds
+```
+
+## `Stat`: Statistical Transformations
+
+```{r stat_count_in_bar_graph}
+ggplot(diamonds) +
+  # geom_bar(mapping = aes(x = cut))         # Implicit count computing
+  # geom_bar(mapping = aes(x = cut), binwidth = 30)       
+                                             # binwidth is not supported in bar_graph
+  # stat_count(mapping = aes(x = cut))       # count transformation under the hood
+  # geom_bar(mapping = aes(x = cut, y = ..prop.., group = 1))
+                                             # proportion computing
+  # geom_bar(mapping = aes(x = cut, color = cut))
+                                             # Color a bar chart
+  # geom_bar(mapping = aes(x = cut, fill = cut))
+                                             # Color a bar chart
+  geom_bar(mapping = aes(x = cut, fill = clarity), position = "stack")
+                                             # stacked rectangle representing cut & clarity
+                                             # stack is default position
+```
+```{r stat_identity_in_bar_graph}
+demo_small_table <- tibble::tribble(
+  ~cut,         ~freq,
+  "Fair",       1000,      # Key in a table should be unique for `identity stat`
+  "Good",       2000,
+  "Very Good",  3000,
+  "Premium",    4000,
+  "Ideal",      5000
+)
+demo_small_table
+ggplot(data = demo_small_table) +
+  geom_bar(mapping = aes(x = cut, y = freq), stat = "identity")
+```
+```{r stat_summary}
+ggplot(data = diamonds) +
+  stat_summary(
+    mapping = aes(x = cut, y = depth),
+    fun.ymin = min,
+    fun.ymax = max,
+    fun.y = median
+  )
+```
+```{r stat_bin}
+ggplot(data = diamonds)+
+  geom_histogram(mapping = aes(price, fill = cut), binwidth = 500)
+```
+Because `stat_bin` is not supported by `geom_bar`, `geom_histogram` and `geom_freqpoly` functions.
+```{r identity_position_in_bar_graph}
+# Max value is less than default stack position
+ggplot(diamonds, mapping = aes(x = cut)) +
+  # geom_bar(mapping = aes(fill = clarity), alpha = 2/5, position = "identity")
+  geom_bar(mapping = aes(color = clarity), fill = NA, position = "identity")
+```
+```{r fill_position_in_bar_chart}
+ggplot(diamonds, mapping = aes(x = cut)) +
+  # geom_bar(mapping = aes(fill = clarity), position = "fill")
+                                    # Easy for proportions comparing
+  geom_bar(mapping = aes(fill = clarity), position = "dodge")
+                                    # Separate overlapping objects
+```
+```{r jitter_for_overplotting_in_scatterplot}
+ggplot(diamonds) +
+  # geom_point(mapping = aes(x = depth, y = price))
+                                    # Many points around depth of 60 overlapped
+  # geom_point(data = filter(diamonds, depth == 60), mapping = aes(x = depth, y = price))
+                                    # Still hard to see where the mass of data is
+  # geom_point(data = filter(diamonds, depth == 60), mapping = aes(x = depth, y = price), position = "jitter")
+                                    # Spreads 511 points out making points receive random noises
+  geom_jitter(data = filter(diamonds, depth == 60), mapping = aes(x = depth, y = price), width = 0.1)
+                                    # Make the total spread to be 0.2 around 60
+cat("Filtered Result Rows:", NROW(filter(diamonds, depth == 60)))
+```
+```{r bar_chart_to_coxcomb_chart}
+bar <- ggplot(diamonds) +
+  geom_bar(
+    mapping = aes(x = cut, fill = cut),
+    show.legend = FALSE,     # Because x-axis has represented meanings of each bar
+    width = 1
+  )
+bar <- bar + theme(aspect.ratio = 1)   # Set aspect ratio of the panel to the picture
+bar <- bar + labs(x = NULL, y = NULL)
+bar
+bar + coord_flip()
+bar + coord_polar()
+```

@@ -16,6 +16,7 @@
 
 # RStudio files
 .Rproj.user/
+.Rproj.user
 
 # packrat
 packrat/lib*/
@@ -37,3 +38,8 @@ vignettes/*.pdf
 
 # Shiny token, see https://shiny.rstudio.com/articles/shinyapps.html
 rsconnect/
+
+# Notebook Files compiled from R markdown
+rmds/*.html
+rmds/*.md
+
