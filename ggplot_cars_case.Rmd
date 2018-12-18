@@ -1,0 +1,87 @@
+---
+title: "ggplot Cars Case"
+author: "Richard Lea <chigix@zoho.com>"
+date: "2018/12/12"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Reference to the tutorial in <https://r4ds.had.co.nz/data-visualisation.html>
+
+## Dataset
+
+```{r cars}
+ggplot2::mpg
+```
+
+Some Summaries tabulated from this dataset:
+
+```{r  typeOfCar}
+data.frame(unclass(table(ggplot2::mpg$class)))
+```
+
+```{r highway miles per gallon}
+table(ggplot2::mpg$hwy)
+```
+
+
+## ggplot Scaling Basics
+
+```{r scaling}
+ggplot(data = ggplot2::mpg) +
+  # geom_point(mapping = aes(x = displ, y = hwy))
+  # geom_point(mapping = aes(x = displ, y = hwy, color = class)) # Scaling by class
+  # geom_point(mapping = aes(x = displ, y = hwy, size = class)) # bad scaling
+  # geom_point(mapping = aes(x = displ, y = hwy, alpha = class)) # bad scaling
+  # geom_point(mapping = aes(x = displ, y = hwy, shape = class)) # bad scaling
+  geom_point(mapping = aes(x = displ, y = hwy, stroke = displ)) # Scaling by displ
+```
+
+A negative relationship between engine size (`displ`) and fuel efficiency (hwy)
+
+Mostly, the unusual types of cars, corresponding to the points which seem to fall outside of the linear trend, are `two-seaters`.
+
+### ggplot Setting Appearance
+
+```{r set_aes_properties}
+ggplot(data = mpg) +
+  # geom_point(mapping = aes(x = displ, y = hwy))
+  # geom_point(mapping = aes(x = displ, y = hwy), color = "blue")
+  # geom_point(mapping = aes(x = displ, y = hwy), size = 0.4)
+  geom_point(mapping = aes(x = displ, y = hwy), shape = "diamond", size = 3)
+```
+```{r split_categorical_variable_into_facets}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  # facet_wrap(~ class, nrow = 2) # One dimentional Facet
+  # facet_grid(drv ~ cyl)         # Two dimentional Facet
+  facet_grid(. ~ cyl)           # Same with below
+  # facet_wrap(~ cyl, nrow = 1)
+```
+## Geometrical Object
+
+```{r smooth_geom}
+ggplot(mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point(mapping = aes(color = class)) +
+  # geom_point() +
+  geom_smooth()
+# geom_smooth(mapping = aes(linetype = drv))
+```
+```{r flip_axes_get_long_labels_without_overlapping_on_x-axis}
+boxplot <- ggplot(mpg, mapping = aes(x = class, y = hwy)) +
+  geom_boxplot()
+boxplot
+boxplot + coord_flip()
+```
+```{r add_reference_line}
+point_plot <- ggplot(mpg, mapping = aes(x = cty, y = hwy)) +
+  geom_point()
+point_plot
+point_plot + geom_abline()
+point_plot + geom_abline() + coord_fixed()    # Similar to the coord_quickmap function
+point_plot + geom_abline() + coord_quickmap()
+```
+
