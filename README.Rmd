@@ -1,6 +1,6 @@
 ---
 title: 'R4DataScience Repository'
-output: html_document
+output: github_document
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
