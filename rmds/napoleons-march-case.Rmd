@@ -1,0 +1,33 @@
+---
+title: "Napoleon’s March Data Case"
+output: 
+  html_notebook: 
+    fig_height: 7
+    fig_width: 7
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+library("HistData")
+library("tidyverse")
+```
+
+
+# About the DataSet
+
+```{r dataset}
+Minard.cities
+Minard.temp
+Minard.troops
+```
+# Plotting
+
+```{r napoleons_march_on_russia}
+ggplot(data = Minard.troops, mapping = aes(long, lat)) +
+  geom_path(aes(size = survivors, alpha = survivors, color = direction, group = group)) +
+  geom_text(data = Minard.cities, aes(label = city), size = 3) +
+  scale_color_manual(values = c("gray50", "red")) +
+  xlab("経度") + ylab("緯度")  + ggtitle("ナポレオンのロシア遠征") +
+  coord_quickmap()
+```
+
