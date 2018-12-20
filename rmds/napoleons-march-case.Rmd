@@ -24,6 +24,11 @@ Minard.troops
 
 ```{r napoleons_march_on_russia}
 ggplot(data = Minard.troops, mapping = aes(long, lat)) +
+  # geom_polygon(
+  #   data = world_map[world_map$long > 17 & world_map$long < 62 & world_map$lat > 53.8 & world_map$lat < 57, ], 
+  #   mapping = aes(long, lat, group = group),
+  #   fill = "white", color = "black"
+  # ) +
   geom_path(aes(size = survivors, alpha = survivors, color = direction, group = group)) +
   geom_text(data = Minard.cities, aes(label = city), size = 3) +
   scale_color_manual(values = c("gray50", "red")) +
