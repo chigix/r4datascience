@@ -2,6 +2,7 @@
 title: "ggplot Diamonds Case"
 author: "Richard Lea"
 date: "2018/12/16"
+bibliography: bibliography.bib
 output: html_document
 ---
 
@@ -9,6 +10,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 require(ggplot2)
 require(dplyr)
+require(scales)
 ```
 
 ## DataSet
@@ -69,10 +71,10 @@ ggplot(diamonds, mapping = aes(x = cut)) +
   geom_bar(mapping = aes(color = clarity), fill = NA, position = "identity")
 ```
 ```{r fill_position_in_bar_chart}
-ggplot(diamonds, mapping = aes(x = cut)) +
-  # geom_bar(mapping = aes(fill = clarity), position = "fill")
+base_plot <- ggplot(diamonds, mapping = aes(x = cut))
+base_plot + geom_bar(mapping = aes(fill = clarity), position = "fill")
                                     # Easy for proportions comparing
-  geom_bar(mapping = aes(fill = clarity), position = "dodge")
+base_plot + geom_bar(mapping = aes(fill = clarity), position = "dodge")
                                     # Separate overlapping objects
 ```
 ```{r jitter_for_overplotting_in_scatterplot}
@@ -87,7 +89,9 @@ ggplot(diamonds) +
                                     # Make the total spread to be 0.2 around 60
 cat("Filtered Result Rows:", NROW(filter(diamonds, depth == 60)))
 ```
-```{r bar_chart_to_coxcomb_chart}
+
+A regular bar chart converted into polar coordinates produces another type of graphic: the Coxcomb plot [@wickham2010].
+```{r coxcomb_plot_on_cut_variable}
 bar <- ggplot(diamonds) +
   geom_bar(
     mapping = aes(x = cut, fill = cut),
@@ -95,8 +99,30 @@ bar <- ggplot(diamonds) +
     width = 1
   )
 bar <- bar + theme(aspect.ratio = 1)   # Set aspect ratio of the panel to the picture
-bar <- bar + labs(x = NULL, y = NULL)
-bar
+(bar <- bar + labs(x = NULL, y = NULL))
 bar + coord_flip()
 bar + coord_polar()
 ```
+```{r proportion_one_variable}
+(bar_plot <-
+   ggplot(diamonds, mapping = aes(x = "", fill = clarity)) +
+   geom_bar(width = 1))
+bar_plot + coord_polar(theta = "y")
+bar_plot + coord_polar(theta = "x")
+```
+```{r transforming_on_scatterplot_of_price_vs_carat}
+(price_vs_carat <- ggplot(data = diamonds, mapping = aes(x = carat, y = price)) +
+  geom_point())
+price_vs_carat + 
+  scale_x_log10(
+    breaks = trans_breaks("log10", function(x)  10 ^ x),
+    labels = trans_format("log10", math_format(10 ^ .x))
+  ) + 
+  scale_y_log10(
+    breaks = trans_breaks("log10", function(x)  10 ^ x),
+    labels = trans_format("log10", math_format(10 ^ .x))
+  ) + geom_smooth(method = "lm")
+price_vs_carat + coord_trans(x = "log10", y = "log10")
+price_vs_carat + scale_x_log10() + scale_y_log10() + geom_smooth(method = "lm") + coord_polar()
+```
+# References
