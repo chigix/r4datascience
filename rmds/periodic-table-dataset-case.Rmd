@@ -53,6 +53,8 @@ class(c(25, 37, 22, 30))
 class(seq(from = 0, to = 100, by = 2))
 class(seq(from = 0L, to = 100L, by = 2L))
 seq(from = 0L, to = 100L)
+(tmp_val <-  seq(1, 10, length.out = 6))
+rm(tmp_val)    # Remove the target object
 ```
 
 Using [colon operator](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Operators) to create sequence quickly:
