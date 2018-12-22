@@ -1,0 +1,68 @@
+---
+title: "プロジェクト演習中間報告"
+subtitle: ""
+author: "平倉直樹"
+date: "2018/12/12"
+output:
+  revealjs::revealjs_presentation:
+    pandoc_args: [
+      '--from', 'markdown+autolink_bare_uris+tex_math_single_backslash-implicit_figures'
+    ]
+    theme: default
+    include:
+    css: "for-revealjs.css"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(eval = FALSE)
+library(DiagrammeR)
+```
+
+# プロジェクト演習中間報告
+
+## 進捗状況
+
+- 用いるデータ
+    - 株価
+- 時系列データ解析として以下のモデルを用いた株価予測
+    - 自己回帰モデル
+    - （移動平均モデル）
+    - （自己回帰移動平均モデル）
+
+## 用いる株価データ
+- 日産の株価データのうち調整後終値を利用
+```{r, eval=TRUE}
+setwd("/Users/hirakuranaoki/R/kabuka")
+df <- read.csv("nissan2018.csv",header=T,row.names=1)
+ts.plot(df["adjustedClose"])
+```
+
+## 自己回帰モデルによる株価予測
+- 自己回帰モデル
+\[X_t=c+\sum_{i=1}^{p}\phi_iX_{t-i}+\epsilon_t\]
+（$c$は定数項，$\epsilon_t$は白色雑音，$\phi_i$はモデルのパラメータ）
+- このモデルを用いて1期（1日）先予測を10期分行い真値と比較
+
+```{r, eval=TRUE}
+setwd("/Users/hirakuranaoki/R/kabuka")
+df <- read.csv("nissan2018.csv",header=T,row.names=1)
+adjclose_data <- as.ts(scan("/Users/hirakuranaoki/R/kabuka/nissan_ar_training_adjclose.txt",skip=1))
+j <- 1
+ar_predict_result <- matrix()
+for(i in 211:220){
+     training_data <- adjclose_data[1:i]
+     ar_data_adjclose <- ar(training_data)
+     ar_predict_adjclose <- predict(ar_data_adjclose, ahead=1)
+     ar_predict_result[j] <- ar_predict_adjclose$pred[1]
+     j <- j+1
+}
+ts.plot(as.ts(ar_predict_result),xlim=c(0,10),ylim=c(950,1040), ann=FALSE)
+par(new=T)
+ts.plot(as.ts(adjclose_data[212:221]),xlim=c(0,10),ylim=c(950,1040),lty="dashed",ann=F)
+legend("topright", lty=1:2, legend=c("predict", "true value"))
+```
+---
+## 今後の予定
+- 移動平均や自己回帰移動平均を用いて予測
+- R Markdownでレポートにまとめる
