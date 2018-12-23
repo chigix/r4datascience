@@ -59,9 +59,11 @@ rm(tmp_val)    # Remove the target object
 
 Using [colon operator](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Operators) to create sequence quickly:
 
-```{r}
-98:112
+```{r offset_a_vector}
 5:-5
+lag(5:-5)
+lead(5:-5)
+lead(lead(5:-5))
 ```
 
 Create Data frame with vectors previously created:
@@ -94,6 +96,28 @@ periodic_table$name[10:20]
 periodic_table$name[c(10, 12)]
 periodic_table$name[10:20][-c(1, 2)]
 ```
+```{r arithmetic_mean}
+mean(123L)
+```
+```{r arithmetic_operation}
+'%bankai%' <- function(x, y) {
+  x ^ 2 + y ^ 2
+}
+transmute(
+  periodic_table,
+  atomic_number = atomic_number,
+  symbol = symbol,
+  name = name,
+  weight = atomic_weight,
+  density = density,
+  heat_cap = heat_capacity,
+  log = log(heat_cap),   # Logarithms Operation
+  integer_vol = weight %/% density,
+  remainder_vol = weight %% density,
+  vol = weight / density,
+  bankai = vol %bankai% heat_cap  # private operator
+)
+```
 
 ### Filtering
 
@@ -106,9 +130,43 @@ friend_names[friend_names %in% c("Ayanami")]
 periodic_table[(periodic_table$name %in% c("Hydrogen", "Oxygen")),
                c("atomic_weight", "state_at_stp")]
 ```
+### Cumulative and Rolling Aggregates
 
-```{r}
-mean(123L)
+```{r cummulative_calculation}
+1:10
+cumsum(1:10)
+cumprod(1:10)
+cummin(1:10)
+cummax(1:10)
+cummean(1:10)
 ```
 
+The **Rank** of an element is the number of elements in the sequence that are smaller than the estimated element.
+```{r ranking}
+min_rank(c(1, 2, 2, NA, 3, 4))
+desc(c(1, 2, 2, NA, 3, 4))
+min_rank(desc(c(1, 2, 2, NA, 3, 4)))
+dense_rank(c(1, 2, 2, NA, 3, 4))  # No gaps for the NA element
+row_number(c(1, 2, 2, NA, 3, 4))
+percent_rank(c(1, 2, 2, NA, 3, 4)) # Convert the rank to proportion
+ntile(c(1, 2, 2, NA, 3, 4), 2)
+```
+```{r understanding_cumulative_rank_distribution}
+range = c(1, 2, 2, NA, 3, 4)
+(test_table <- mutate(
+  data.frame(range = c(1, 2, 2, NA, 3, 4)),
+  cume_dist = cume_dist(range),
+  rownum = row_number(range),
+  total_count = sum(!is.na(range)),
+  cume_dist_mimic = rank(range, ties.method = "max") / total_count
+))
+ggplot(test_table) +
+  geom_bar(
+    mapping = aes(x = rownum, y = cume_dist), 
+    stat = "identity"
+  )
+```
+```{r}
+
+```
 
