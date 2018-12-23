@@ -27,6 +27,12 @@ Source: CRAN
 Version: 0.8-4
 Hash: e05ef5c862b45f3e554e1f8deefd6e27
 
+Package: Lahman
+Source: CRAN
+Version: 6.0-0
+Hash: a7db87aa61fe9f0a8c229549cb10fee6
+Requires: dplyr
+
 Package: MatrixModels
 Source: CRAN
 Version: 0.4-1
