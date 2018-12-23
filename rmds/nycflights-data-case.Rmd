@@ -1,0 +1,142 @@
+---
+title: "New York City Flights Data Playground"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+library("dplyr")
+```
+
+## Dataset
+
+```{r dataset}
+flights
+```
+Take a simple summary of this dataset:
+```{r summary_for_nycflights_dataset}
+str(flights)
+```
+
+### Common Variable Types
+
+Common Variable Types in DataFrame:
+* `int` stands for integers
+* `dbl` stands for doubles or real numbers
+* `chr` stands for character vectors, where strings are included as well
+* `dttm` is the abbreviation for `data-times`
+* `date` stands for dates
+* `lgl` stands for logical or vectors that contain `TRUE` or `FALSE`
+* `fctr` stands for factors, which R uses to represent categorical variables with fixed possible values
+
+## `dplyr` Functions
+
+```{r filter_rows}
+# Select all flights on Jan 1st.
+filter(flights, month == 1, day == 1)
+# Select all flights in Nov or Dec.
+filter(flights, month == 11 | month == 12) # Pay attention to the `|` here, it is not `||`
+filter(flights, month %in% c(9, 10))        # Select all flights in Sep or Oct.
+filter(flights, between(dep_time, 0, 600))  # Departed between midnight and 6am
+```
+```{r near_usage_cases}
+cat("[ sqrt(2) ^ 2 == 2 ] ->", sqrt(2) ^ 2 == 2)
+cat("\n[ near(sqrt(2) ^ 2, 2) ] ->", near(sqrt(2) ^ 2, 2))
+cat("\n[ 1/49 * 49 == 1 ] ->", 1/49 * 49 == 1)
+cat("\n[ near(1/49 * 49, 1) ] ->", near(1/49 * 49, 1))
+```
+```{r De_Morgans_raw}
+# Pay attention to the `|` here, which isn't `||`
+all(
+  filter(flights, !(arr_delay > 120 | dep_delay > 120)) ==
+    filter(flights, arr_delay <= 120, dep_delay <= 120)
+)
+```
+```{r missing_values}
+NA
+NA > 33
+NA - 2
+NA ^ NA
+is.na(NA)    # A recommended way to determine whether a value is missing
+```
+`NA` will make almost any operation unknown.
+```{r arrange_rows}
+flights
+arrange(flights, year, desc(month), day)
+```
+```{r select_columns}
+select(flights, year:day)        # Same with the below
+# select(flights, year, month, day)
+select(flights, -(year: day))    # Select all colums except year, month and day
+select(flights, starts_with("dep_"))
+select(flights, contains("dep_"))
+select(flights, contains("dep_"), everything()) # All dep fields moved to the start of the dataframe
+select(flights, 出発時間 = dep_time, 予定出発 = sched_dep_time, 出発遅延 = dep_delay)
+# Slight Difference between `select` and `rename`
+rename(flights, 出発時間 = dep_time, 予定出発 = sched_dep_time, 出発遅延 = dep_delay)
+```
+```{r mutate_new_var}
+mutate(
+  select(flights, year:day, ends_with("delay"), distance, air_time),
+  gain = dep_delay - arr_delay,
+  speed = distance / air_time * 60,
+  gain_per_hour = gain / air_time * 60 # Refer to the newly created column
+)
+transmute(
+  flights,
+  gain = dep_delay - arr_delay,
+  speed = distance / air_time * 60,
+  gain_per_hour = gain / air_time * 60 # Refer to the newly created column
+)   # which will drop all original variables in the table
+```
+```{r Grouped_summaries}
+summarise(flights, delay = mean(dep_delay, na.rm = TRUE), count = n())
+summarise(
+  group_by(flights, year, month, day),
+  delay = mean(dep_delay, na.rm = TRUE),
+  count = n()
+)
+```
+```{r transformation_with_pipe}
+# (delay_dataset <- summarise(
+#   group_by(flights, dest),
+#   count = n(),
+#   dist = mean(distance, na.rm = TRUE),
+#   delay = mean(arr_delay, na.rm = TRUE)
+# ))
+# (delay_filtered <- filter(delay_dataset, count > 20, dest != "HNL"))
+#
+# Use Pipe to make the transformation above concise:
+(delays <- flights %>%
+   group_by(dest) %>%
+   summarise(
+     count = n(),
+     dist = mean(distance, na.rm = TRUE),
+     delay = mean(arr_delay, na.rm = TRUE)
+   ) %>%
+   filter(count > 20, dest != "HNL")
+)
+ggplot(delays, aes(x = dist, y = delay)) +
+  geom_point(aes(size = count), alpha = 1/3) +
+  geom_smooth(se = FALSE)
+```
+```{r count_to_visualize_density_on_frequency_plot}
+(delays <- flights
+  %>% filter(!is.na(dep_delay),!is.na(arr_delay)) # Filter not cancelled flights
+  %>% group_by(tailnum)
+  %>% summarise(
+    delay = mean(arr_delay),
+    count = n()
+  )
+)
+filter(delays, count > 25)
+delays %>%
+  ggplot(mapping = aes(x = delay)) +
+  geom_freqpoly(binwidth = 10) +
+  xlab("delay [min]")
+delays %>%
+  # filter(count > 25) %>%     # Filter to few flights to see variation
+  ggplot(mapping = aes(x = delay, y = count)) +
+  geom_point(alpha = 1/8) +    # Use the stastistic through count
+  xlab("delay [min]")
+```
+
