@@ -13,6 +13,15 @@ Source: CRAN
 Version: 1.0.0
 Hash: 6abedd7919c4457604c0aa44529a6683
 
+Package: DiagrammeR
+Source: CRAN
+Version: 1.0.0
+Hash: 09fbb1773ad6bf64dd4e8b2ea4f2bea4
+Requires: RColorBrewer, downloader, dplyr, glue, htmltools,
+    htmlwidgets, igraph, influenceR, magrittr, purrr, readr, rgexf,
+    rlang, rstudioapi, scales, stringr, tibble, tidyr, viridis,
+    visNetwork
+
 Package: HistData
 Source: CRAN
 Version: 0.8-4
@@ -44,10 +53,21 @@ Version: 0.3.3.4.0
 Hash: 0a294589d5332dfca9b3facc031c9dee
 Requires: Rcpp
 
+Package: Rook
+Source: CRAN
+Version: 1.1-1
+Hash: d53d9e345096f5c8b5c535dfe9175e2f
+Requires: brew
+
 Package: SparseM
 Source: CRAN
 Version: 1.77
 Hash: 08f1f60e1038957030bcd9f4a58d22d8
+
+Package: XML
+Source: CRAN
+Version: 3.98-1.16
+Hash: 52b8f335b145afc4bccb7fe8122b89c0
 
 Package: abind
 Source: CRAN
@@ -84,6 +104,11 @@ Package: bitops
 Source: CRAN
 Version: 1.0-6
 Hash: 67d0775189fd0041d95abca618c5c07e
+
+Package: brew
+Source: CRAN
+Version: 1.0-6
+Hash: 931f9972deae0f205e1c78a51f33149b
 
 Package: broom
 Source: CRAN
@@ -162,6 +187,12 @@ Package: digest
 Source: CRAN
 Version: 0.6.17
 Hash: 6bd8bf6c0430a024a994f2481c2d8516
+
+Package: downloader
+Source: CRAN
+Version: 0.4
+Hash: c99f05ffa816e03ece87b37ea9d4f0ed
+Requires: digest
 
 Package: dplyr
 Source: CRAN
@@ -273,6 +304,12 @@ Version: 0.3.6
 Hash: 87bd72cdfc46f686bbd46b180cb5f0b5
 Requires: Rcpp, digest
 
+Package: htmlwidgets
+Source: CRAN
+Version: 1.2
+Hash: de18b75f31630089b22e30d4b188cfbe
+Requires: htmltools, jsonlite, yaml
+
 Package: httpuv
 Source: CRAN
 Version: 1.4.5
@@ -284,6 +321,18 @@ Source: CRAN
 Version: 1.3.1
 Hash: 2d32e01e53d532c812052e27a1021441
 Requires: R6, curl, jsonlite, mime, openssl
+
+Package: igraph
+Source: CRAN
+Version: 1.2.2
+Hash: 1e95612a0034372c6a387fbeff90992f
+Requires: magrittr, pkgconfig
+
+Package: influenceR
+Source: CRAN
+Version: 0.1.0
+Hash: 74fa4b51bb8c4ee841f712d40dbf5f13
+Requires: igraph
 
 Package: jsonlite
 Source: CRAN
@@ -493,6 +542,12 @@ Version: 1.4.3
 Hash: a08472524968be4e233b4c8d0ae5aef1
 Requires: Rcpp, plyr, stringr
 
+Package: rgexf
+Source: CRAN
+Version: 0.15.3
+Hash: c1658eebadcdd6c354a013feea30ce94
+Requires: Rook, XML, igraph
+
 Package: rio
 Source: CRAN
 Version: 0.5.10
@@ -612,10 +667,22 @@ Source: CRAN
 Version: 1.1.4
 Hash: f3f97ce59092abc8ed3fd098a59e236c
 
+Package: viridis
+Source: CRAN
+Version: 0.5.1
+Hash: 39edaec2078b4fc928afb73cc1ce6625
+Requires: ggplot2, gridExtra, viridisLite
+
 Package: viridisLite
 Source: CRAN
 Version: 0.3.0
 Hash: 78bb072c4f9e729a283d4c40ec93f9c6
+
+Package: visNetwork
+Source: CRAN
+Version: 2.0.4
+Hash: b2a4440593cfd5d858cee5fdbc0fc4f0
+Requires: htmltools, htmlwidgets, jsonlite, magrittr
 
 Package: whisker
 Source: CRAN
