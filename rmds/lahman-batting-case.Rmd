@@ -1,0 +1,36 @@
+---
+title: "Lahman::Batting Data Case"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+library("Lahman")
+```
+
+## Dataset
+
+```{r dataset}
+Lahman::Batting
+```
+
+## Data Summarise
+
+```{r variation_decreases_in_big_data}
+(
+  batters <- Lahman::Batting
+    %>% group_by(playerID)
+    %>% summarise(
+      batting_average = sum(H, na.rm = TRUE) / sum(AB, na.rm = TRUE),
+      sum_at_bats = sum(AB, na.rm = TRUE)
+    )
+    %>% arrange(desc(batting_average))
+)
+(
+  batters
+    %>% filter(sum_at_bats > 100)  # Filter Major League baseball player
+    %>% ggplot(mapping = aes(x = sum_at_bats, y = batting_average))
+      + geom_point(alpha = 1/10)
+      + geom_smooth(se = FALSE)
+)
+```
+So the interesting result from the first table above is that players in the first page of the table are with 100% batting_average, but the sum of bats are only 1 or two, which means that they are lucky only, not skilled. This fact could also be seen through the scatterpoint plot above that abundant amount of players are shown close to the `sum_at_bats` of 0.
