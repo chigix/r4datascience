@@ -8,6 +8,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library("ggplot2")
+library("dplyr")
 ```
 
 Reference to the tutorial in <https://r4ds.had.co.nz/data-visualisation.html>
@@ -15,7 +16,7 @@ Reference to the tutorial in <https://r4ds.had.co.nz/data-visualisation.html>
 ## Dataset
 
 ```{r cars}
-ggplot2::mpg
+as_tibble(ggplot2::mpg)
 ```
 
 Some Summaries tabulated from this dataset:
