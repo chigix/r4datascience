@@ -43,3 +43,6 @@ rsconnect/
 rmds/*.html
 rmds/*.md
 
+# npm
+node_modules
+
