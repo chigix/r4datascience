@@ -1,4 +1,4 @@
 [submodule "docs"]
 	path = docs
 	url = https://github.com/chigix/r4datascience.git
-	branch = gh-pages
+	branch = docs-src
