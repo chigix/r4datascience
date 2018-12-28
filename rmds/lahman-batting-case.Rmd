@@ -1,7 +1,8 @@
 ---
 title: "Lahman::Batting Data Case"
-output: html_notebook
 ---
+
+# Lahman::Batting Data Case
 
 ```{r setup, include=FALSE}
 library("Lahman")

@@ -1,6 +1,5 @@
 ---
 title: "Spatial Data Maps"
-output: html_notebook
 ---
 
 ## Simple Map Data

@@ -1,10 +1,10 @@
 ---
 title: "New York City Flights Data Playground"
-output: html_notebook
 ---
 
 ```{r setup, include=FALSE}
 library("dplyr")
+library("nycflights13")
 ```
 
 ## Dataset

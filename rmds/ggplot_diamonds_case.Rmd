@@ -3,7 +3,6 @@ title: "ggplot Diamonds Case"
 author: "Richard Lea"
 date: "2018/12/16"
 bibliography: bibliography.bib
-output: html_document
 ---
 
 ```{r setup, include=FALSE}

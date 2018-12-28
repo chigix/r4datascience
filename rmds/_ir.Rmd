@@ -3,7 +3,6 @@ title: "プロジェクト演習中間報告"
 subtitle: ""
 author: "平倉直樹"
 date: "2018/12/12"
-output:  html_notebook
 ---
 
 ```{r setup, include=FALSE}

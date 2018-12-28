@@ -2,7 +2,6 @@
 title: "ggplot Cars Case"
 author: "Richard Lea <chigix@zoho.com>"
 date: "2018/12/12"
-output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -22,7 +21,7 @@ as_tibble(ggplot2::mpg)
 Some Summaries tabulated from this dataset:
 
 ```{r  typeOfCar}
-data.frame(unclass(table(ggplot2::mpg$class)))
+data.frame(table(ggplot2::mpg$class))
 ```
 
 ```{r highway miles per gallon}
