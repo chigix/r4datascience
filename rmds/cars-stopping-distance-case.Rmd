@@ -1,0 +1,79 @@
+---
+title: "Speed and Stopping Distances of Cars Data case"
+author: "Richard Lea <https://github.com/chigix>"
+date: "2019/1/2"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("ggplot2")
+library("dplyr")
+```
+
+## Dataset
+
+```{r dataset}
+cars
+```
+
+## Basic Statistical Transformation
+
+```{r basic-graph}
+ggplot(data = cars) +
+  geom_point(mapping = aes(x = speed, y = dist))
+```
+
+## Basic Summaries
+
+```{r arithmetic-summaries}
+cars %>%
+  group_by(speed) %>%
+  summarise(
+    count = n(),
+    count_alt = sum(!is.na(dist)),
+    sum = sum(dist),
+    avg = mean(dist),
+    values = paste(dist, collapse = ", ")
+  )
+```
+```{r position-summaries}
+cars %>%
+  group_by(speed) %>%
+  summarise(
+    values = paste(dist, collapse = ", "),
+    first = first(dist),
+    last = last(dist),
+    second = nth(dist, 2),
+    median = median(dist),
+    mad = mad(dist),
+    quantile_quarter = quantile(dist, 0.25),
+    quantile_half = quantile(dist, 0.5)
+  )
+```
+```{r spread-summaries}
+cars %>%
+  group_by(speed) %>%
+  summarise(
+    median = median(dist),
+    mad = mad(dist),
+    std = sd(dist),
+    avg = mean(dist),
+    min = min(dist),
+    max = max(dist),
+    quartile1 = quantile(dist, 0.25),
+    quartile3 = quantile(dist, 0.75)
+  ) %>%
+  ggplot() +
+  geom_crossbar(mapping = aes(
+    x = speed, y = median, ymin = median - mad, ymax = median + mad
+  ), color = "green4", fill = "olivedrab2") +
+  geom_crossbar(mapping = aes(
+    x = speed, y = median, ymin = quartile1, ymax = quartile3
+  ), color = "brown", fill = "brown", width = 0.2) +
+  geom_errorbar(mapping = aes(
+    x = speed, ymin = avg - std, ymax = avg + std
+  ), color = "red") +
+  geom_point(data = cars, mapping = aes(x = speed, y = dist), color = "blue") +
+  geom_point(mapping = aes(x = speed, y = avg), shape = 21, fill = "red") +
+  geom_line(mapping = aes(x = speed, y = avg), color = "red")
+```
