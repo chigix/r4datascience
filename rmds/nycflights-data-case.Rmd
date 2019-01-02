@@ -3,14 +3,15 @@ title: "New York City Flights Data Playground"
 ---
 
 ```{r setup, include=FALSE}
-library("dplyr")
 library("nycflights13")
+library("tidyverse")
 ```
 
 ## Dataset
 
-```{r dataset}
+```{r arrange_rows}
 flights
+arrange(flights, year, desc(month), day)
 ```
 Take a simple summary of this dataset:
 ```{r summary_for_nycflights_dataset}
@@ -20,6 +21,7 @@ str(flights)
 ### Common Variable Types
 
 Common Variable Types in DataFrame:
+
 * `int` stands for integers
 * `dbl` stands for doubles or real numbers
 * `chr` stands for character vectors, where strings are included as well
@@ -59,10 +61,6 @@ NA ^ NA
 is.na(NA)    # A recommended way to determine whether a value is missing
 ```
 `NA` will make almost any operation unknown.
-```{r arrange_rows}
-flights
-arrange(flights, year, desc(month), day)
-```
 ```{r select_columns}
 select(flights, year:day)        # Same with the below
 # select(flights, year, month, day)
@@ -120,8 +118,9 @@ ggplot(delays, aes(x = dist, y = delay)) +
   geom_smooth(se = FALSE)
 ```
 ```{r count_to_visualize_density_on_frequency_plot}
+# Visualize the density through count
 (delays <- flights
-  %>% filter(!is.na(dep_delay),!is.na(arr_delay)) # Filter not cancelled flights
+  %>% filter(!is.na(dep_delay),!is.na(arr_delay)) # Filter the flights not cancelled
   %>% group_by(tailnum)
   %>% summarise(
     delay = mean(arr_delay),
@@ -139,4 +138,145 @@ delays %>%
   geom_point(alpha = 1/8) +    # Use the stastistic through count
   xlab("delay [min]")
 ```
+```{r arithmetic-mean-of-arrival-delays}
+# Estimation Upon Average Delay among NYC-Flights
+(
+  flights
+    %>% filter(!is.na(dep_delay),!is.na(arr_delay)) # Filter the flights not cancelled
+    %>% group_by(year, month, day)
+    %>% summarise(
+      avg_delay_for_all = mean(arr_delay),
+      avg_delay_for_positive_part = mean(arr_delay[arr_delay > 0])
+    )
+    %>% mutate(
+      date_field = ISOdate(year, month, day) # Attach date type variable
+    )
+    %>% ggplot()
+          + geom_point(
+            mapping = aes(x = date_field, y = avg_delay_for_all, colour = "DelayForAll")
+          )
+          + geom_point(
+            mapping = aes(x = date_field, y = avg_delay_for_positive_part, colour = "DelayForPositive")
+          )
+          + scale_color_manual(
+            # Set the order in the legend
+            breaks = c("DelayForPositive", "DelayForAll"),
+            values = c("DelayForAll" = "brown", "DelayForPositive" = "violetred1")
+          )
+)
+```
+```{r spread_of_distances}
+(
+  flights
+    %>% filter(!is.na(dep_delay),!is.na(arr_delay)) # Filter the flights not cancelled
+    %>% group_by(dest)
+    %>% summarise(
+      distanceAvg = mean(distance),
+      min = min(distance),
+      max = max(distance),
+      median = median(distance),
+      standardDeviation = sd(distance),
+      interquartileRange = IQR(distance),
+      interquartileRange_0 = quantile(distance, 0.75) - quantile(distance, 0.25),
+      medianAbsoluteDeviation = mad(distance),
+      prove_quantile1 = mean(distance < quantile(distance, 0.25)) # Get a Proportion
+    )
+    %>% arrange(desc(standardDeviation))
+)
+```
 
+Measures of spread:
+
+* Mean Squared Deviation: $\frac{\sum (x-\mu)^2}{N}$
+    * $N$ = Number of Data
+* Standard Deviation(Root Mean Squared Deviation):
+  $\sigma = \sqrt{\frac{\sum (x-\mu)^2}{N}}$ 
+    * $N$ = Number of Data
+* Median Absolute Deviation:
+
+    $MAD(D) = median({|d_i - median(D)|})$
+
+```{r summary-distinct-values}
+(
+  flights
+  %>% filter(!is.na(dep_delay),!is.na(arr_delay)) # Filter the flights not cancelled
+  %>% group_by(dest)
+  %>% summarise(
+    count = n(),
+    carriers = n_distinct(carrier), # Same as the below
+    # carriers_0 = length(unique(carrier)),
+    carriers_list = paste(unique(carrier), collapse = ", ")
+  )
+  %>% arrange(desc(carriers))
+)
+```
+
+## Summary Fist and Last Flights each day
+
+### Departure time only of first and last flights each day
+
+```{r find-first-and-last-depart-time}
+(
+  flights
+  %>% filter(!is.na(dep_delay),!is.na(arr_delay)) # Filter the flights not cancelled
+  %>% group_by(year, month, day)
+  %>% summarise(
+    first_dep_a = min(dep_time),
+    first_dep_b = first(dep_time),
+    last_dep_a = max(dep_time),
+    last_dep_b = last(dep_time),
+    n_early = sum(dep_time < 500)   # Count flights left before 5am
+  )
+)
+```
+
+### Details of first and last flights each day
+
+```{r ranking-summaries}
+(
+  flights
+  %>% filter(!is.na(dep_delay),!is.na(arr_delay)) # Filter the flights not cancelled
+  %>% group_by(year, month, day)
+  %>% mutate(
+    ranking = min_rank(desc(dep_time)),
+    ranking_reverse = min_rank(dep_time),
+    range_r = paste(range(ranking), collapse = " ~ ")
+  )
+  %>% filter(ranking %in% range(ranking))
+  %>% arrange(year, month, day, ranking)
+)
+```
+
+## Summary Mileage Each Day
+
+```{r mileage-per-day}
+count(flights, year, month, day, wt = distance)
+```
+```{r mileage-a-flight}
+count(flights, year, month, day, tailnum, wt = distance)
+```
+
+## Popular Destinations
+
+```{r popular-dests}
+# Filter By Group Without Summary
+flights %>%
+  group_by(dest) %>%
+  filter(n() > 365) %>%
+  filter(arr_delay > 0) %>%
+  mutate(prop_delay = arr_delay / sum(arr_delay)) %>%
+  select(year: day, dest, arr_delay, prop_delay) %>%
+  arrange(dest)
+```
+
+## Rolling up Summary
+
+```{r rolling-up}
+(daily <- group_by(flights, year, month, day))
+(per_day <- summarise(daily, count = n()))
+(per_month <- summarise(per_day, count = sum(count)))
+(per_year <- summarise(per_month, count = sum(count)))
+daily %>%
+  ungroup() %>%
+  summarise(flights = n())
+```
