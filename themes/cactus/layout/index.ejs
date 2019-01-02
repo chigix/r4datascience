@@ -12,11 +12,11 @@
           <a class="icon" target="_blank" href="<%- url_for(theme.social_links[link]) %>">
             <i class="fas fa-envelope"></i><!--
       ---></a><!--
-      ---><% } else { %>
+      ---><% } else if (theme.social_links[link]) { %>
           <a class="icon" target="_blank" href="<%- url_for(theme.social_links[link]) %>">
             <i class="fab fa-<%= link %>"></i><!--
       ---></a><!--
-    ---><% } %><!--
+      ---><% } else { i += 1; continue; } %><!--
     ---><%= ( nb_links > 0 && i < nb_links-1 ?
             ( i == nb_links-2 ? ' '+__('index.enum_and')+' '
             : __('index.enum_comma')+' ' )

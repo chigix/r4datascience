@@ -13,8 +13,8 @@ timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://yoursite.com
-root: /
+url: https://chigix.github.io/r4datascience/
+root: /r4datascience/
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 
@@ -76,6 +76,12 @@ pagination_dir: page
 theme: cactus
 theme_config:
   colorscheme: white
+  social_links:
+    github: https://github.com/chigix/r4datascience
+    twitter: ~
+    facebook: ~
+    linkedin: ~
+    mail: mailto:chigix@zoho.com
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
