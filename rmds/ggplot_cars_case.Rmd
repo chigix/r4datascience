@@ -73,9 +73,38 @@ ggplot(mpg, mapping = aes(x = displ, y = hwy)) +
 ```
 ```{r flip_axes_get_long_labels_without_overlapping_on_x-axis}
 boxplot <- ggplot(mpg, mapping = aes(x = class, y = hwy)) +
-  geom_boxplot()
+  geom_boxplot(outlier.shape = NA)
 boxplot
 boxplot + coord_flip()
+```
+```{r highway-miles-ranking}
+mpg %>%
+  group_by(class, year) %>%
+  summarise(
+    avg_hwy = mean(hwy)
+  ) %>%
+  ungroup() %>%
+  group_by(year) %>%
+  mutate(rank = min_rank(avg_hwy)) %>%
+  arrange(year, rank) %>%
+  mutate(
+    proportion = avg_hwy / sum(avg_hwy),
+    cum_proportion = cumsum(avg_hwy) / sum(avg_hwy) - proportion
+  ) %>%
+  ggplot() +
+  geom_ribbon(mapping = aes(
+    x = year,
+    ymin = cum_proportion,
+    ymax = cum_proportion + proportion,
+    fill = class
+  )) +
+  xlim(1998, 2009) +
+  scale_y_continuous(labels = scales::percent) +
+  geom_text(mapping = aes(
+    y = cum_proportion,
+    x = year,
+    label = scales::percent(round(proportion, 2))
+  ), size = 5, vjust = -1)
 ```
 ```{r add_reference_line}
 point_plot <- ggplot(mpg, mapping = aes(x = cty, y = hwy)) +
