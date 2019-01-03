@@ -1,5 +1,5 @@
 ---
-title: "ggplot Diamonds Case"
+title: "ggplot2::diamonds Data Case"
 author: "Richard Lea"
 date: "2018/12/16"
 bibliography: bibliography.bib
@@ -18,37 +18,8 @@ require(scales)
 ggplot2::diamonds
 ```
 
-## `Stat`: Statistical Transformations
+## Basic Statistical Transformations: `Stat`
 
-```{r stat_count_in_bar_graph}
-ggplot(diamonds) +
-  # geom_bar(mapping = aes(x = cut))         # Implicit count computing
-  # geom_bar(mapping = aes(x = cut), binwidth = 30)       
-                                             # binwidth is not supported in bar_graph
-  # stat_count(mapping = aes(x = cut))       # count transformation under the hood
-  # geom_bar(mapping = aes(x = cut, y = ..prop.., group = 1))
-                                             # proportion computing
-  # geom_bar(mapping = aes(x = cut, color = cut))
-                                             # Color a bar chart
-  # geom_bar(mapping = aes(x = cut, fill = cut))
-                                             # Color a bar chart
-  geom_bar(mapping = aes(x = cut, fill = clarity), position = "stack")
-                                             # stacked rectangle representing cut & clarity
-                                             # stack is default position
-```
-```{r stat_identity_in_bar_graph}
-demo_small_table <- tibble::tribble(
-  ~cut,         ~freq,
-  "Fair",       1000,      # Key in a table should be unique for `identity stat`
-  "Good",       2000,
-  "Very Good",  3000,
-  "Premium",    4000,
-  "Ideal",      5000
-)
-demo_small_table
-ggplot(data = demo_small_table) +
-  geom_bar(mapping = aes(x = cut, y = freq), stat = "identity")
-```
 ```{r stat_summary}
 ggplot(data = diamonds) +
   stat_summary(
@@ -124,4 +95,65 @@ price_vs_carat +
 price_vs_carat + coord_trans(x = "log10", y = "log10")
 price_vs_carat + scale_x_log10() + scale_y_log10() + geom_smooth(method = "lm") + coord_polar()
 ```
-# References
+### Count and Proportion on cutting quality through Bar Graph
+
+```{r basic-count}
+(
+  ggplot(data = diamonds) +
+    geom_bar(mapping = aes(x = cut, y = ..count..))
+    # geom_bar(mapping = aes(x = cut))  # Implicit Count Computing
+    # Error: binwidth is not supported in bar_graph ↓
+    # geom_bar(mapping = aes(x = cut), binwidth = 30)
+    # stat_count(mapping = aes(x = cut))       # count transformation under the hood
+)
+```
+```{r proportion-computing}
+(
+  ggplot(diamonds) +
+    # geom_bar(mapping = aes(x = cut, y = ..prop..))
+    # Groupwise Proportion will make it work on default grouping strategy
+    # which is grouped by color variable, in this data case
+    geom_bar(mapping = aes(x = cut, y = ..prop.., fill = color))
+    # Test if the color variable used as group definition
+)
+(
+  ggplot(diamonds) +
+    # disable all grouping strategy, makes ggplot take
+    # the whole dataset as one group
+    geom_bar(mapping = aes(x = cut, y = ..prop.., group = 1))
+)
+```
+```{r stacked-bar-graph}
+(
+  ggplot(diamonds) +
+    # geom_bar(mapping = aes(x = cut, y = ..count.., fill = clarity), position = "stack")
+    geom_bar(mapping = aes(x = cut, y = ..count.., fill = clarity))
+    # stack is default position in geom_bar function
+)
+(
+  ggplot(diamonds) +
+    geom_bar(mapping = aes(x = cut, y = ..prop.., fill = clarity, group = 1), position = "stack")
+    # position does not work in proportion plot
+)
+```
+
+```{r stat_count_in_bar_graph}
+ggplot(diamonds) +
+  geom_bar(mapping = aes(x = cut, color = cut)) # Color a bar chart
+ggplot(diamonds) +
+  geom_bar(mapping = aes(x = cut, fill = cut))  # Fill a bar chart
+```
+```{r stat_identity_in_bar_graph}
+(demo_small_table <- tibble::tribble(
+  ~cut,         ~freq,
+  "Fair",       1000,      # Key in a table should be unique for `identity stat`
+  "Good",       2000,
+  "Very Good",  3000,
+  "Premium",    4000,
+  "Ideal",      5000
+))
+ggplot(data = demo_small_table) +
+  geom_bar(mapping = aes(x = cut, y = freq), stat = "identity")
+```
+
+## References
