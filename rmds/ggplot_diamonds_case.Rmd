@@ -135,7 +135,7 @@ In the graph above, the tallest bar shows that almost 10,000 observations have a
 
 of that bar.
 
-### `cut` + `price`: Group with a categorical variable
+### `cut`~`price`: Covariation between a categorical variable and continuous variable
 
 ```{r group-continuous-categorical-var-with-bars}
 ggplot(diamonds) +
@@ -150,6 +150,63 @@ Instead of displaying count, plotting in density is an approach as well, which m
 ```{r show-in-density}
 ggplot(diamonds) +
   geom_freqpoly(aes(x = price, y = ..density.., color = cut), bins = 30)
+```
+
+### `cut`~`color`: Covariantion between Two categorical Variables
+
+```{r geom_count}
+ggplot(diamonds) +
+  geom_count(mapping = aes(x = cut, y = color))
+## This computing could also be available in table form:
+diamonds %>% count(color, cut)
+```
+```{r geom_tile}
+diamonds %>%
+  count(color, cut) %>%
+  ggplot() +
+  geom_tile(mapping = aes(x = cut, y = color, fill = n)) +
+  scale_fill_continuous(trans = 'reverse') +
+  guides(fill = guide_legend(reverse = T))
+```
+
+### `carat`~`price`: Covariation between Two Continuous Variables
+
+**Scatterplots** become less useful as the size of the dataset grows, because of overplotting among points. Event **transparency** is still challenging for very large datasets.
+
+```{r transforming_on_scatterplot_of_price_vs_carat}
+(price_vs_carat <- ggplot(data = diamonds, mapping = aes(x = carat, y = price)) +
+  geom_point(alpha = 1/10))
+price_vs_carat + 
+  scale_x_log10(
+    breaks = trans_breaks("log10", function(x)  10 ^ x),
+    labels = trans_format("log10", math_format(10 ^ .x))
+  ) +
+  scale_y_log10(
+    breaks = trans_breaks("log10", function(x)  10 ^ x),
+    labels = trans_format("log10", math_format(10 ^ .x))
+  ) + geom_smooth(method = "lm")
+price_vs_carat + coord_trans(x = "log10", y = "log10")
+price_vs_carat + scale_x_log10() + scale_y_log10() + geom_smooth(method = "lm") + coord_polar()
+```
+```{r bin2d-visualization}
+ggplot(diamonds) +
+  geom_bin2d(mapping = aes(x = carat, y = price))
+```
+```{r hexbin-visualization}
+ggplot(diamonds) +
+  geom_hex(aes(x = carat, y = price))
+```
+```{r bin-one-var-to-categorical}
+ggplot(diamonds) +
+  geom_boxplot(mapping = aes(x = carat, y = price, group = cut_width(carat, 0.5)))
+```
+```{r display-same-number-points-in-each-bin}
+ggplot(diamonds) +
+  geom_boxplot(mapping = aes(
+    x = carat,
+    y = price,
+    group = cut_number(carat, 20)
+  ))
 ```
 
 
@@ -176,21 +233,6 @@ bar + coord_polar()
    geom_bar(width = 1))
 bar_plot + coord_polar(theta = "y")
 bar_plot + coord_polar(theta = "x")
-```
-```{r transforming_on_scatterplot_of_price_vs_carat}
-(price_vs_carat <- ggplot(data = diamonds, mapping = aes(x = carat, y = price)) +
-  geom_point())
-price_vs_carat + 
-  scale_x_log10(
-    breaks = trans_breaks("log10", function(x)  10 ^ x),
-    labels = trans_format("log10", math_format(10 ^ .x))
-  ) + 
-  scale_y_log10(
-    breaks = trans_breaks("log10", function(x)  10 ^ x),
-    labels = trans_format("log10", math_format(10 ^ .x))
-  ) + geom_smooth(method = "lm")
-price_vs_carat + coord_trans(x = "log10", y = "log10")
-price_vs_carat + scale_x_log10() + scale_y_log10() + geom_smooth(method = "lm") + coord_polar()
 ```
 
 ### Zooming

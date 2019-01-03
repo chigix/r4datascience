@@ -75,5 +75,6 @@ cars %>%
   ), color = "red") +
   geom_point(data = cars, mapping = aes(x = speed, y = dist), color = "blue") +
   geom_point(mapping = aes(x = speed, y = avg), shape = 21, fill = "red") +
-  geom_line(mapping = aes(x = speed, y = avg), color = "red")
+  geom_line(mapping = aes(x = speed, y = avg), color = "red") +
+  xlab("速度 (m/h)") + ylab("距離 (ft)")
 ```
