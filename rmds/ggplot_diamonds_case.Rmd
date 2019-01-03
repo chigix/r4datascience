@@ -146,6 +146,15 @@ ggplot(diamonds) +
   geom_freqpoly(aes(x = price, color = cut), bins = 30)
 ```
 
+Instead of displaying count, plotting in density is an approach as well, which make sure that the area under each frequency polygon is one.
+```{r show-in-density}
+ggplot(diamonds) +
+  geom_freqpoly(aes(x = price, y = ..density.., color = cut), bins = 30)
+```
+
+
+## Coordinate Systems
+
 ### Coordinate Transformation
 
 A regular bar chart converted into polar coordinates produces another type of graphic: the Coxcomb plot [@wickham2010].
@@ -182,6 +191,35 @@ price_vs_carat +
   ) + geom_smooth(method = "lm")
 price_vs_carat + coord_trans(x = "log10", y = "log10")
 price_vs_carat + scale_x_log10() + scale_y_log10() + geom_smooth(method = "lm") + coord_polar()
+```
+
+### Zooming
+
+```{r}
+(beforeZoom <- ggplot(diamonds) +
+  geom_histogram(mapping = aes(x = y), binwidth = 0.5))
+beforeZoom + coord_cartesian(ylim = c(0, 30))
+beforeZoom + coord_cartesian(xlim = c(-2, 4), ylim = c(0, 10))
+```
+
+Through the graph above, filter records by the variable of y and see them in a detailed table:
+
+```{r}
+diamonds %>%
+  filter(y < 3 | y > 20) %>%
+  select(price, x, y, z) %>%
+  arrange(y)
+```
+
+For the values that are unusual, replaceing them with missing values is a recommended practice, after which the graph created again could be less affected by outliers.
+
+```{r}
+diamonds %>%
+  mutate(
+    y = ifelse(y < 3 | y > 20, NA, y) # Remove the effect from unusual values
+  ) %>%
+  ggplot() +
+  geom_histogram(mapping = aes(x = y), binwidth = 0.5)
 ```
 
 ## References
