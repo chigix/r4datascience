@@ -1,7 +1,7 @@
 ---
 title: "プロジェクト演習中間報告"
 subtitle: ""
-author: "平倉直樹"
+author: "hrkr"
 date: "2018/12/12"
 ---
 
@@ -25,8 +25,7 @@ library(DiagrammeR)
 ## 用いる株価データ
 - 日産の株価データのうち調整後終値を利用
 ```{r, eval=TRUE}
-setwd("/Users/hirakuranaoki/R/kabuka")
-df <- read.csv("nissan2018.csv",header=T,row.names=1)
+df <- read.csv("../data-raw/nm2018.csv",header=T,row.names=1)
 ts.plot(df["adjustedClose"])
 ```
 
@@ -37,9 +36,8 @@ ts.plot(df["adjustedClose"])
 - このモデルを用いて1期（1日）先予測を10期分行い真値と比較
 
 ```{r, eval=TRUE}
-setwd("/Users/hirakuranaoki/R/kabuka")
-df <- read.csv("nissan2018.csv",header=T,row.names=1)
-adjclose_data <- as.ts(scan("/Users/hirakuranaoki/R/kabuka/nissan_ar_training_adjclose.txt",skip=1))
+df <- read.csv("../data-raw/nm2018.csv",header=T,row.names=1)
+adjclose_data<-as.ts(df["adjustedClose"])
 j <- 1
 ar_predict_result <- matrix()
 for(i in 211:220){
