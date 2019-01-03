@@ -1,41 +1,46 @@
 ---
 title: "Prophet sample"
 output: html_document
+author: hrkr
 ---
 
 
 ## prophet example
-- Use r package [prophet](https://facebook.github.io/prophet/)
+- Use r package ["prophet"](https://facebook.github.io/prophet/)
 
 ```{r setup, include=FALSE}
 library(prophet)
 library(tidyverse)
 ```
 
-##dataset
+## dataset
 ```{r}
-df<-read.csv("data-raw/nm2018.csv")
+df<-read.csv("../data-raw/nm2018.csv")
 ```
 
-##format
+## format
 ```{r}
-df<-log(df)
-df$date <- as.POSIXct(df$date) #convert to "%Y-%M-%d"
+df$adjustedClose<-log(df$adjustedClose)
+df$date <- as.POSIXct(df$date) #convert to "YYYY-MM-DD"
 df2<-df %>%
   select(date,adjustedClose) %>%
   dplyr::slice(1:200)
-colnames(df2)<-c('ds','y')
+colnames(df2)<-c('ds','y') #rename cols to use prophet()
 ```
-#prediction model
+
+## prediction model
 ```{r}
 model <- prophet(df2)
 future <- make_future_dataframe(model,100)
 forecast <- predict(model,future)
 ```
-##plot
+
+## plot
 ```{r}
-plot(model,forecast)+
-  geom_point(data = df,mapping=aes(x=date,y=adjustedClose))
 plot(model,forecast)
 
+plot(model,forecast)+
+  geom_point(data = df,mapping=aes(x=date,y=adjustedClose))
+
+prophet_plot_components(model, forecast)
 ```
