@@ -4,6 +4,7 @@ library("nycflights13")
 library("HistData")
 library("DiagrammeR")
 library("Lahman")
+library("prophet")
 library("nlme")
 # Needed for Rendering R Markdown
 library("bitops")
