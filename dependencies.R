@@ -1,5 +1,7 @@
 library("tidyverse")
+library("hexbin")
 library("maps")
+library("scales")
 library("nycflights13")
 library("HistData")
 library("DiagrammeR")
