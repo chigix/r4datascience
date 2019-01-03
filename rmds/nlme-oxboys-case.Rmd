@@ -1,0 +1,55 @@
+---
+title: "nlme::Oxboys data case"
+author: "Richard Lea <https://github.com/chigix>"
+date: "2019/1/3"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("nlme")
+```
+
+## Dataset
+
+This dataset records the heights and centered ages of 26 boys, measured on nine occasions, which result in the data frame consists $26\ \text{Subject} \times 9\ \text{Occasion} = 234$ rows.
+
+```{r dataset}
+as_tibble(nlme::Oxboys)
+```
+
+## Grouping Visualization
+
+```{r single-line-connect-all-observations-problem}
+ggplot(nlme::Oxboys, aes(age, height)) +
+  geom_line()
+```
+
+This Line Plot above looks weird because all of the observations are treated as one continuous data set, rather than grouping them into 26 subjects(actually 26 boys).
+
+```{r fix-line-plot-with-subjects-grouping}
+ggplot(Oxboys, aes(age, height)) +
+  geom_line(mapping = aes(group = Subject))
+```
+Now, 26 lines of data corresponding to 26 subjects(actually 26 boys) are obtained by defining the grouping structure explicitly.
+
+```{r grouping-in-geom-smooth-problem}
+ggplot(Oxboys, aes(age, height)) +
+  geom_line(mapping = aes(group = Subject)) +
+  # Use Linear Models
+  geom_smooth(mapping = aes(group = Subject), method = "lm", se = FALSE)
+```
+```{r change-group-aesthetic-to-fit-across-all-boys}
+ggplot(Oxboys, aes(age, height)) +
+  geom_line(mapping = aes(group = Subject)) +
+  # Use Linear Models
+  # geom_smooth(mapping = aes(), size = 2, method = "lm", se = FALSE)
+  # group = 1 disable all grouping strategy, which makes smooth function here
+  #           to try to create a conditional means connecting all occasions
+  geom_smooth(mapping = aes(group = 1), size = 2, method = "lm", se = FALSE)
+```
+```{r boxplot-visualize-each-occasion}
+ggplot(Oxboys, aes(Occasion, height)) +
+  geom_boxplot() +
+  geom_point(aes(color = Subject))
+```
+The result shows that `group` aesthetic is not needed to specify, because the default grouping works in `boxplot` for the discrete occasion variable.
