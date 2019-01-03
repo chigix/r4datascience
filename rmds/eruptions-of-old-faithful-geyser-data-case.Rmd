@@ -1,0 +1,49 @@
+---
+title: "Eruptions Data of Old Faithful Geyser"
+author: "Richard Lea <https://github.com/chigix>"
+date: "2019/1/3"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Dataset
+
+```{r dataset}
+faithful
+```
+
+## Observation on the `eruption`
+
+```{r eruption-observation-count}
+faithful %>%
+  mutate(
+    erupt_group = cut_width(eruptions, width = 0.25)
+  ) %>%
+  ggplot() + 
+  geom_histogram(mapping = aes(x = eruptions, fill = erupt_group), binwidth = 0.25)
+```
+
+## Observation on the `waiting time`
+
+```{r}
+faithful %>%
+  ggplot() + 
+  geom_freqpoly(mapping = aes(x = waiting, color = cut_width(eruptions, width = 0.25)), binwidth = 10)
+```
+This graph above shows there are more observations when waiting arount 50~60 mins and 77~82mins than other length of waiting.
+
+The graph above is exploring the distribution of `waiting`, a continuous variable, broken down by the categorical variable, `erupt_group`.
+
+## Examine Relationship
+
+```{r}
+ggplot(faithful, mapping = aes(x = waiting, y = eruptions)) +
+  geom_point()
+```
+The scatterplot above shows the pattern, as well, that longer wait times are associated with longer eruptions, the clues about relationships are called **Patterns**.
+
+Two **Clusters** are displayed through the scatterplot too.
+
+The Patterns are extracted by modeling.
