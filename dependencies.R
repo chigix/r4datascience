@@ -7,6 +7,7 @@ library("HistData")
 library("DiagrammeR")
 library("Lahman")
 library("prophet")
+library("modelr")
 library("nlme")
 # Needed for Rendering R Markdown
 library("bitops")

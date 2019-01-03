@@ -208,6 +208,21 @@ ggplot(diamonds) +
     group = cut_number(carat, 20)
   ))
 ```
+```{r}
+model <- lm(log(price) ~ log(carat), data = diamonds)
+diamonds %>%
+  add_residuals(model = model) %>%
+  mutate(resid = exp(resid)) %>%
+  ggplot() + geom_point(mapping = aes(x = carat, y = resid))
+```
+```{r}
+model <- lm(log(price) ~ log(carat), data = diamonds)
+diamonds %>%
+  add_residuals(model = model) %>%
+  mutate(resid = exp(resid)) %>%
+  ggplot() + geom_boxplot(mapping = aes(x = cut, y = resid))
+```
+Residual = Observed y-value - Predicted y-value
 
 
 ## Coordinate Systems
