@@ -1,5 +1,6 @@
 library("tidyverse")
 library("hexbin")
+library("V8")
 library("maps")
 library("scales")
 library("nycflights13")
