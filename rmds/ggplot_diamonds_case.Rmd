@@ -37,10 +37,10 @@ ggplot(diamonds, mapping = aes(x = cut)) +
 ```
 ```{r fill_position_in_bar_chart}
 base_plot <- ggplot(diamonds, mapping = aes(x = cut))
+# Easy for proportions comparing
 base_plot + geom_bar(mapping = aes(fill = clarity), position = "fill")
-                                    # Easy for proportions comparing
+# Separate overlapping objects
 base_plot + geom_bar(mapping = aes(fill = clarity), position = "dodge")
-                                    # Separate overlapping objects
 ```
 ```{r jitter_for_overplotting_in_scatterplot}
 ggplot(diamonds) +
@@ -67,8 +67,14 @@ A variable is **categorical** if it can only take one of a small set of values.[
     # geom_bar(mapping = aes(x = cut))  # Implicit Count Computing
     # Error: binwidth is not supported in bar_graph ↓
     # geom_bar(mapping = aes(x = cut), binwidth = 30)
-    # stat_count(mapping = aes(x = cut))       # count transformation under the hood
+    # stat_count(mapping = aes(x = cut))       # count transformation underlying
 )
+```
+
+What's more, preset factors on the variables in the tibble make possible values of cuts be shown in order from *Fair* through *Ideal* in the graph above, which could available through `count` like the following table as well:
+
+```{r direct-count-on-cut}
+diamonds %>% count(cut)
 ```
 ```{r proportion-computing}
 (
@@ -108,14 +114,21 @@ ggplot(diamonds) +
 ```{r stat_identity_in_bar_graph}
 (demo_small_table <- tibble::tribble(
   ~cut,         ~freq,
+  #-----------|------
   "Fair",       1000,      # Key in a table should be unique for `identity stat`
   "Good",       2000,
   "Very Good",  3000,
   "Premium",    4000,
   "Ideal",      5000
 ))
-ggplot(data = demo_small_table) +
-  geom_bar(mapping = aes(x = cut, y = freq), stat = "identity")
+demo_small_table %>%
+  mutate(cut = fct_inorder(cut)) %>%
+  rename(
+    `カット` = cut,
+    `頻度` = freq
+  ) %>%
+  ggplot() +
+    geom_bar(mapping = aes(x = `カット`, y = `頻度`), stat = "identity")
 ```
 
 ### `price`: Examine the distribution of a continuous variable
