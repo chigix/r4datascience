@@ -1,5 +1,5 @@
 ---
-title: "ggplot Cars Case"
+title: "ggplot::mpg Cars Case"
 author: "Richard Lea <chigix@zoho.com>"
 date: "2018/12/12"
 ---
