@@ -1,0 +1,277 @@
+---
+title: "modelr::Simple Simulated Datasets"
+author: "Richard Lea <https://github.com/chigix>"
+date: "2019/1/7"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("modelr")
+library("purrr")
+```
+
+## Datasets
+
+```{r datasets-sim1}
+sim1 %>%
+  ggplot() +
+  geom_point(aes(x, y))
+```
+```{r datasets-sim2}
+ggplot(sim2) +
+  geom_point(aes(x, y, color = x))
+```
+```{r datasets-sim3}
+ggplot(sim3) +
+  geom_point(aes(x1, y, color = x2))
+```
+
+```{r datasets-sim4}
+ggplot(sim4) +
+  geom_point(aes(x1, y, color = x2))
+```
+
+
+## Slop-Intercept Line Model: *Model Family* and *Coefficients*
+
+### With random models
+
+```{r}
+(random_models <- tibble(
+  a = runif(250, -5, 5),
+  b = runif(250, -20, 40)
+))
+cat(
+  "Generated Points Pairs:",
+  "\nlength(random_models$a): ",
+  length(random_models$a),
+  "\nlength(random_models$b): ",
+  length(random_models$b)
+)
+random_models %>%
+  mutate(rownum = row_number()) %>%
+  ggplot() + geom_point(aes(rownum, a), color = "brown") +
+  geom_point(aes(rownum, b), color = "violetred1")
+# Plot the models as slop-intercept form lines
+ggplot(sim1) +
+  geom_abline(data = random_models, mapping = aes(intercept = b, slope = a), alpha = 1/4) +
+  geom_point(aes(x, y))
+```
+```{r training-a-model-through-distance-calculation}
+abline_model<- function(mod, data) {
+  data$x * mod[1] + mod[2]
+}
+distance_deviation <- function(mod, data) {
+  diff <- data$y - abline_model(mod, data)
+  sqrt(mean(diff ^ 2))
+}
+(
+  measured_dist <- random_models %>%
+    mutate(distance_deviation = map2_dbl(a, b, function(a, b) {
+      distance_deviation(c(a, b), sim1)
+    })) %>%
+    arrange(distance_deviation)
+)
+ggplot(sim1) +
+  geom_point(size = 2, color = "red", mapping = aes(x, y)) +
+  # Overlay the best model onto the data
+  geom_abline(
+    data = filter(measured_dist, rank(distance_deviation) <= 1),
+    aes(intercept = b, slope = a, colour = -distance_deviation)
+  )
+```
+Visualize distance deviation across all models:
+```{r}
+ggplot(measured_dist, aes(a, b)) +
+  geom_point(data = filter(measured_dist, rank(distance_deviation) <= 10), color = "red", size = 4) +
+  geom_point(aes(color = -distance_deviation)) +
+  xlab("a (slope)") + ylab("b (intercept)")
+```
+
+### Grid Search
+
+```{r}
+(grid_models <- expand.grid(
+  a = seq(1, 3, length = 25),
+  b = seq(-5, 20, length = 25)
+)) %>%
+  ggplot(aes(a, b)) + geom_point() +
+  xlab("a (slope)") + ylab("b (intercept)")
+# Search the best 10 models in the generated evenly spaced grid of points
+(measured_dist <- grid_models %>%
+  mutate(distance_deviation = map2_dbl(a, b, function(a, b) {
+    distance_deviation(c(a, b), sim1)
+  }))) %>%
+  ggplot() +
+  geom_point(
+    data = filter(measured_dist, rank(distance_deviation) < 10 ), 
+    mapping = aes(a, b), color = "red", size = 4
+  ) +
+  geom_point(data = measured_dist, aes(a, b, color = -distance_deviation)) +
+  xlab("a (slope)") + ylab("b (intercept)")
+```
+Then visualize the best 9 models by overlaying them onto the original data:
+
+```{r}
+ggplot(sim1, aes(x, y)) +
+  geom_abline(
+    data = filter(measured_dist, rank(distance_deviation) < 9),
+    mapping = aes(slope = a, intercept = b, color = factor(distance_deviation))
+  ) +
+  geom_point(color = "grey30")
+```
+
+### Newton-Raphson Search
+
+```{r}
+(optimized_model <- optim(
+  c(0, 0),
+  fn = distance_deviation,
+  data = sim1
+))
+# Visualize this model onto original data
+ggplot() +
+  geom_abline(
+    slope = optimized_model$par[1],
+    intercept = optimized_model$par[2],
+    color = "red"
+  ) +
+  geom_point(data = sim1, mapping = aes(x, y), color = "grey30")
+```
+
+```{r prediction-upon-optimized-model}
+ggplot(sim1, aes(x)) +
+  geom_line(
+    data = data_grid(sim1, x) %>%
+      mutate(
+        pred = optimized_model$par[1] * x + optimized_model$par[2]
+      ),
+    mapping = aes(y = pred),
+    color = "red", size = 1
+  ) +
+  geom_point(aes(y = y), color = "grey30")
+```
+```{r calculate-residuals}
+sim1 %>%
+  mutate(
+    pred = optimized_model$par[1] * x + optimized_model$par[2],
+    resid = y - pred
+  )
+```
+
+
+### General Linear Model
+
+$$
+y = a_1 + a_2\cdot x_1 + a_3 \cdot x_2 + ... a_n \cdot x_{n-1}
+$$
+, which could be applied here as the case of $n = 2$
+
+
+```{r}
+(linear_model = lm(y ~ x, data = sim1))
+# Extract Model Coefficients
+coef(linear_model)
+```
+, where `y ~ x` would be translated as a function like `y = ax + b`.
+
+```{r prediction-upon-linear-model}
+sim1 %>%
+  data_grid(x) %>%
+  add_predictions(model = linear_model) %>%
+  ggplot(aes(x, pred)) +
+  geom_line(color = "red", size = 1) +
+  geom_point(data = sim1, mapping = aes(x, y))
+```
+Because the generated data grid of points are frome the original data instead of a manually defined array, this is an evenly spaced grid against regular spaced grid.
+
+Residuals are the distances between the observed and predicted values computed above.[@wickham2010]
+
+```{r understand-residuals}
+sim1 %>%
+  add_residuals(linear_model) %>%
+  ggplot() + geom_freqpoly(aes(x = resid), bins = 30)
+```
+
+, where the occasions with the residual around 0 is the largest. The largest count around 0 shows that the average of the residual is 0.
+
+```{r visualize-random-noise-through-residuals}
+sim1 %>%
+  add_residuals(linear_model) %>%
+  ggplot() +
+  geom_ref_line(h = 0) +
+  geom_point(aes(x, resid))
+```
+
+## Categorical Predictor
+
+```{r}
+sim2 %>%
+  data_grid(x) %>%
+  add_predictions(lm(y ~ x, data = sim2)) %>%
+  ggplot() +
+  geom_point(data = sim2, mapping = aes(x, y, color = x)) +
+  geom_point(aes(x, pred), color = "red", size = 4)
+```
+```{r}
+(gathered_model <- sim3 %>%
+  data_grid(x1, x2) %>%
+  gather_predictions(
+    lm(y ~ x1 + x2, sim3),
+    lm(y ~ x1 * x2, sim3),
+    lm(y ~ x1 + x2 + x1 * x2, sim3)
+  ))
+ggplot(sim3) +
+  geom_point(aes(x1, y, color = x2)) +
+  geom_line(
+    data = gathered_model, 
+    aes(x1, pred, color = x2
+        # group = paste(x2, model)
+    )
+  ) +
+  facet_wrap(~ model)
+sim3 %>%
+  gather_residuals(
+    lm(y ~ x1 + x2, sim3),
+    lm(y ~ x1 * x2, sim3)
+  ) %>%
+  ggplot() +
+  geom_point(aes(x1, resid, color = x2)) +
+  facet_grid(model ~ x2)
+```
+The facets by both model above shows that:
+* little obvious pattern in the residuals for model, `y ~ x1 * x2`
+* Some Pattern has been clearly missed for model, `y ~ x1 + x2`, in the group `x2 == b`
+
+## Two Continuous Predictor
+
+```{r}
+(predicts <- sim4 %>%
+  data_grid(
+    # Generates a 5 x 5 = 25 entries encountered table
+    x1 = seq_range(x1, 5),
+    x2 = seq_range(x2, 5)
+  ) %>%
+  gather_predictions(
+    lm(y ~ x1 + x2, data = sim4),
+    lm(y ~ x1 * x2, data = sim4)
+    # lm(y ~ x1 * x2, data = sim4, pretty = TRUE)
+  ))
+# Visualize the two predictions as 3d surfaces
+ggplot(predicts) + geom_tile(aes(x = x1, y = x2, fill = pred)) +
+  facet_wrap(~ model)
+# Visualize the the surfaces in multile slices
+ggplot(predicts) +
+  geom_line(aes(x = x1, y = pred, color = x2, group = x2)) +
+  facet_wrap(~ model)
+# Visualize the the surfaces in multile slices
+ggplot(predicts) +
+  geom_line(aes(x = x2, y = pred, color = x1, group = x1)) +
+  facet_wrap(~ model)
+```
+Because it is a manually specified array here without any dependency on data itself, this is a regularly spaced grid of values created in the code above.
+
+The lines showing slices of the tiles are much more easy for comparing shades of the colors in tile graph that not suggest much difference between the two models.
+
+## References
