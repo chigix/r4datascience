@@ -1,0 +1,45 @@
+---
+title: "stringr::sentences data case"
+author: "Richard Lea <https://github.com/chigix>"
+date: "2019/1/6"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("stringr")
+```
+
+## Dataset
+
+```{r dataset}
+head(sentences)
+```
+
+## Color Seeker
+
+```{r}
+(regexp <- str_c(
+  c("red", "orange", "yellow", "green", "blue", "purple"), 
+  collapse = "|"
+))
+```
+```{r}
+str_subset(sentences, regexp)
+head(str_count(sentences, regexp))
+head(str_extract(sentences, regexp))
+str_extract(str_subset(sentences, regexp), regexp)
+```
+```{r}
+# View Sentences containing a color
+str_view_all(str_subset(sentences, regexp), regexp)
+# View Sentences with more than one color
+str_view_all(sentences[str_count(sentences, regexp) > 1], regexp)
+```
+```{r}
+str_extract_all(sentences[str_count(sentences, regexp) > 1], regexp)
+str_extract_all(sentences[str_count(sentences, regexp) > 1], regexp, simplify = T)
+```
+```{r}
+sentences[str_count(sentences, regexp) > 1] %>% str_match(regexp)
+```
+
