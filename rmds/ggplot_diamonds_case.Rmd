@@ -7,8 +7,9 @@ bibliography: bibliography.bib
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-require(ggplot2)
 require(dplyr)
+require(ggplot2)
+require(modelr)
 require(scales)
 ```
 
@@ -221,6 +222,8 @@ ggplot(diamonds) +
     group = cut_number(carat, 20)
   ))
 ```
+### `carat`~`price`: Prediction Model
+
 ```{r}
 model <- lm(log(price) ~ log(carat), data = diamonds)
 diamonds %>%
@@ -228,15 +231,35 @@ diamonds %>%
   mutate(resid = exp(resid)) %>%
   ggplot() + geom_point(mapping = aes(x = carat, y = resid))
 ```
-```{r}
-model <- lm(log(price) ~ log(carat), data = diamonds)
+```{r predict-interaction-between-price-carat}
 diamonds %>%
-  add_residuals(model = model) %>%
+  add_residuals(
+    model = lm(log(price) ~ log(carat), data = diamonds)
+  ) %>%
   mutate(resid = exp(resid)) %>%
   ggplot() + geom_boxplot(mapping = aes(x = cut, y = resid))
 ```
 Residual = Observed y-value - Predicted y-value
 
+```{r revealing-the-model}
+# See what exactly equation `lm()` is fitting
+select(diamonds, carat, price) %>%
+  model_matrix(price ~ exp(carat))
+# Attempt with Polynomial
+select(diamonds, price, carat) %>%
+  gather_predictions(
+    lm(price ~ exp(carat), diamonds),
+    lm(price ~ poly(carat, 1), diamonds),
+    lm(price ~ poly(carat, 4), diamonds),
+    lm(price ~ poly(carat, 7), diamonds),
+    lm(price ~ poly(carat, 9), diamonds)
+  ) %>%
+  # na.rm --> Suppress missing values warning
+  ggplot() + geom_point(aes(carat, price), na.rm = TRUE) +
+  geom_line(aes(carat, pred, color = model), size = 1, na.rm = T) +
+  ylim(0, 15000) + xlim(0, 3)
+cat("The Number of Observations used: ", nobs(lm(price ~ exp(carat), diamonds)))
+```
 
 ## Coordinate Systems
 
