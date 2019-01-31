@@ -6,6 +6,9 @@ title: "New York City Flights Data Playground"
 library("nycflights13")
 library("tidyverse")
 library("lubridate")
+library("modelr")
+
+options(na.action = na.warn)
 ```
 
 ## Dataset

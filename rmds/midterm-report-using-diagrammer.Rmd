@@ -9,6 +9,7 @@ date: "2018/12/12"
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(eval = FALSE)
 library(DiagrammeR)
+library(readr)
 ```
 
 # プロジェクト演習中間報告
@@ -25,7 +26,7 @@ library(DiagrammeR)
 ## 用いる株価データ
 - 日産の株価データのうち調整後終値を利用
 ```{r, eval=TRUE}
-df <- read.csv("../data-raw/nm2018.csv",header=T,row.names=1)
+(df <- read_csv("../data-raw/nm2018.csv"))
 ts.plot(df["adjustedClose"])
 ```
 
@@ -36,21 +37,36 @@ ts.plot(df["adjustedClose"])
 - このモデルを用いて1期（1日）先予測を10期分行い真値と比較
 
 ```{r, eval=TRUE}
-df <- read.csv("../data-raw/nm2018.csv",header=T,row.names=1)
-adjclose_data<-as.ts(df["adjustedClose"])
+df <- read.csv("../data-raw/nm2018.csv",
+               header = T,
+               row.names = 1)
+adjclose_data <- as.ts(df["adjustedClose"])
 j <- 1
 ar_predict_result <- matrix()
-for(i in 211:220){
-     training_data <- adjclose_data[1:i]
-     ar_data_adjclose <- ar(training_data)
-     ar_predict_adjclose <- predict(ar_data_adjclose, ahead=1)
-     ar_predict_result[j] <- ar_predict_adjclose$pred[1]
-     j <- j+1
+for(i in 211:220) {
+  training_data <- adjclose_data[1:i]
+  ar_data_adjclose <- ar(training_data)
+  ar_predict_adjclose <- predict(ar_data_adjclose, ahead = 1)
+  ar_predict_result[j] <- ar_predict_adjclose$pred[1]
+  j <- j + 1
 }
-ts.plot(as.ts(ar_predict_result),xlim=c(0,10),ylim=c(950,1040), ann=FALSE)
-par(new=T)
-ts.plot(as.ts(adjclose_data[212:221]),xlim=c(0,10),ylim=c(950,1040),lty="dashed",ann=F)
-legend("topright", lty=1:2, legend=c("predict", "true value"))
+ts.plot(
+  as.ts(ar_predict_result),
+  xlim = c(0, 10),
+  ylim = c(950, 1040),
+  ann = FALSE
+  )
+par(new = T)
+ts.plot(
+  as.ts(adjclose_data[212:221]),
+  xlim = c(0, 10),
+  ylim = c(950, 1040),
+  lty = "dashed",
+  ann = F
+  )
+legend("topright",
+       lty = 1:2,
+       legend = c("predict", "true value"))
 ```
 ---
 ## 今後の予定

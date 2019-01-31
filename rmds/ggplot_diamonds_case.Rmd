@@ -11,6 +11,7 @@ require(dplyr)
 require(ggplot2)
 require(modelr)
 require(scales)
+require(forcats)
 ```
 
 ## DataSet
@@ -139,6 +140,7 @@ Although Bar-Chart is available for continuous variable, but `stat_bin` is not s
 ```{r stat_bin}
 ggplot(data = diamonds)+
   geom_histogram(mapping = aes(price, fill = cut), binwidth = 500)
+  # geom_histogram(mapping = aes(price, fill = cut), binwidth = 500, position = "identity")
 # Get the tabular form data for continuous data
 count(diamonds, cut_width(price, width = 500))
 ```
@@ -222,6 +224,7 @@ ggplot(diamonds) +
     group = cut_number(carat, 20)
   ))
 ```
+
 ### `carat`~`price`: Prediction Model
 
 ```{r}

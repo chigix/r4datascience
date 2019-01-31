@@ -1,0 +1,30 @@
+---
+title: "Car Sales Prediction"
+author: "Richard Lea <https://github.com/chigix>"
+date: "2019/1/30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+```
+
+Use Keras to build up a regression-based neural network for predicting the value of a potential car sale based up a cars dataset.
+
+This data processing refers to the post: <https://towardsdatascience.com/keras-with-r-predicting-car-sales-31f48a58bf6>
+
+The dataset is from: <http://www.michaeljgrogan.com/wp-content/uploads/2018/08/cars.csv>
+
+## Dataset
+
+```{r}
+(cars_dataset <- read_csv("../data-raw/cars.csv", col_names = FALSE))
+as_tibble(lapply(cars_dataset, function (x) {
+  return (
+    (x - min(x)) /
+      (max(x) - min(x))
+  )
+}))
+```
+

@@ -3,6 +3,7 @@ title: "Luteinizing Hormone in Blood Samples:Normal Distribution"
 author: "Richard Lea <https://github.com/chigix>"
 date: "2019/1/21"
 output: html_document
+bibliography: bibliography.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -216,3 +217,4 @@ tibble(lh = datasets::lh, time = 1:48) %>%
   ggplot() + geom_histogram(aes(x = lh), bins = 35)
 ```
 
+## References

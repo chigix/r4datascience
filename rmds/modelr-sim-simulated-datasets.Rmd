@@ -3,12 +3,16 @@ title: "modelr::Simple Simulated Datasets"
 author: "Richard Lea <https://github.com/chigix>"
 date: "2019/1/7"
 output: html_document
+bibliography: bibliography.bib
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library("ggplot2")
 library("modelr")
 library("purrr")
+library(tibble)
+library(dplyr)
 ```
 
 ## Datasets
@@ -166,13 +170,20 @@ sim1 %>%
 $$
 y = a_1 + a_2\cdot x_1 + a_3 \cdot x_2 + ... a_n \cdot x_{n-1}
 $$
-, which could be applied here as the case of $n = 2$
+, which could be applied here as the case of $n = 2 \Rightarrow y \sim x$.
 
+In the linear formula above, $y$ denotes the dependent variable and $x$s are the independent variables.
 
 ```{r}
-(linear_model = lm(y ~ x, data = sim1))
+linear_model = lm(y ~ x, data = sim1)
 # Extract Model Coefficients
-coef(linear_model)
+coefficients(linear_model) # short as: coef(linear_model)
+cat(
+  "Extract Intercept:",
+  coef(linear_model)[[1]],
+  "\nExtract Slope: ",
+  coef(linear_model)[[2]]
+)
 ```
 , where `y ~ x` would be translated as a function like `y = ax + b`.
 
@@ -206,14 +217,149 @@ sim1 %>%
 
 ## Categorical Predictor
 
+### The Classical Effects Model
+
+[@rblogger:lm-function-categorical-predictors]
+
+Mock a set of categorical data for understanding the generation model of categorical data:
+
+```{r rnorm-with-category-dataset}
+set.seed(10)
+n <- 500
+sigma <- 2
+dummy_data <- tibble(
+  category_i = c(rep("category_1", n), rep("category_2", n), rep("category_3", n)),
+  j = c(1:n, 1:n, 1:n),
+  # Set the means of 8, 9.5 and 11 to each category
+  y = c(4 + sigma * rnorm(n), 7.5 + sigma * rnorm(n), 11 + sigma * rnorm(n))
+)
+dummy_data %>%
+  ggplot() + geom_ref_line(v = c(4, 7.5, 11)) +
+  geom_histogram(
+    # identity position is underlied here, instead of default stack positioning
+    aes(x = y, fill = category_i), position = "identity", binwidth = 0.5, alpha = 1/3
+  )
+dummy_data %>%
+  ggplot() + geom_point(
+    aes(j, y, color = category_i)
+  )
+# View this dataset in Matrix:
+dummy_data %>%
+  tidyr::spread(key = category_i, value = y)
+```
+Let $i$ the number of the `category_i`, and $j$ the number of an observation within that category, we could have
+
+* $i$ is available as $\{1, 2, 3\}$
+* $j$ is available between $[1, 500]$
+* Each entry's value `y` could be written as $y_{ji}$
+
+With the symbols defined above, we could describe the relation between the arithmetic means of the three categories as
+$$
+\overline{\text{Category_1}} = \mu + \tau_1 \\
+\overline{\text{Category_2}} = \mu + \tau_2 \\
+\overline{\text{Category_3}} = \mu + \tau_3 \\
+$$
+and describe all the data generations of each entry in the matrix above as
+$$
+\begin{align}
+y_{ji} &= \overline{\text{Category_i}} + \epsilon_{ji} \\
+       &= (\mu + \tau_i) + \epsilon_{ji}  \\
+\end{align}
+\\
+\Rightarrow
+\begin{cases}
+\text{category_1:} & y_{j1} = \mu + \tau_1 + \epsilon_{j1} \\
+\text{category_2:} & y_{j2} = \mu + \tau_2 + \epsilon_{j2} \\
+\text{category_3:} & y_{j3} = \mu + \tau_3 + \epsilon_{j3}
+\end{cases}
+$$
+However the parameters above, $\mu$ and $\tau_1$ $\tau_2$ $\tau_3$, are not estimable, for which the Classical Effects Model is saied *Overparameterized*. 
+
+But the difference in means between categories could become estimable, where R's `lm()` function uses a reparameterization called **reference cell model**, where one of the $\tau_i$s, actually the first item $\tau_1$, is set to zero to allow for a solution:
+$$
+\begin{align}
+\tau_1 &= 0 \Rightarrow \overline{\text{Category_1}} = \mu + 0 
+                                                  & \text{, written as } \mu^* \\
+\overline{\text{Category_2}} - \overline{\text{Category_1}}
+    &= (\mu + \tau_2) - (\mu + \tau_1) \\
+    &= \tau_2 - \tau_1 = \tau_2 - 0               & \text{, written as } \tau_2^*\\
+\overline{\text{Category_3}} - \overline{\text{Category_1}}
+    &= (\mu + \tau_3) - (\mu + \tau_1) \\
+    &= \tau_3 - \tau_1 = \tau_3 - 0               & \text{, written as } \tau_3^*\\
+\end{align}
+$$
+With the symbols from the difference listed above, the means of each category could be rewritten again:
+$$
+\begin{align}
+\overline{\text{Category_1}} &= \mu + \tau_1 = \mu^* \\
+\overline{\text{Category_2}} &= \mu + \tau_2 = \mu^* + \tau_2^* \\
+\overline{\text{Category_3}} &= \mu + \tau_3 = \mu^* + \tau_3^* \\
+\end{align}
+$$
+, where the $p$-values for these tests are more likely to be meaningful as well.
+
+All of the symbols assigned above could be shown and explain R's `lm()` modeling function:
+
 ```{r}
+summary(
+  lm(y ~ category_i, data = dummy_data)
+)
+```
+where,
+
+* $\text{Residual standard error} = 2.044$ is
+    exactly close to our preset $\text{sigma} = 2$.
+* the `(Intercept)` is indeed the mean of `category_1`
+* `category_2`'s coefficient is $3.98 + 3.59 = 7.57$, which is extremely close to the preset value of $7.5$
+* `category_3`'s coefficient is $3.98 + 7.05 = 11.03$, which is exactly close the preset value of 11 in `dummy_data`
+
+### Explain Sim2
+
+```{r linear-regression-for-categorical-variable}
+summary(categorical_lm <- lm(y ~ x, data = sim2))
+# Calculate the Root Mean Squared Error(RMSE)
+cat("RMSE: ", 
+    RMSE = sqrt(sum(residuals(categorical_lm) ^ 2) / df.residual(categorical_lm))
+)
+(categorical_pred_summary <- sim2 %>%
+  data_grid(x) %>%
+  add_predictions(categorical_lm))
 sim2 %>%
   data_grid(x) %>%
-  add_predictions(lm(y ~ x, data = sim2)) %>%
+  add_predictions(categorical_lm) %>%
   ggplot() +
   geom_point(data = sim2, mapping = aes(x, y, color = x)) +
-  geom_point(aes(x, pred), color = "red", size = 4)
+  # Visualize the coefficients of lm modeling
+  geom_ref_line(
+    h = coef(categorical_lm)[["(Intercept)"]],
+    colour = "olivedrab2"
+  ) +
+  geom_ref_line(
+    h = coef(categorical_lm)[["(Intercept)"]] + coef(categorical_lm)[["xb"]],
+    colour = "olivedrab2"
+  ) +
+  geom_ref_line(
+    h = coef(categorical_lm)[["(Intercept)"]] + coef(categorical_lm)[["xc"]],
+    colour = "olivedrab2"
+  ) +
+  geom_ref_line(
+    h = coef(categorical_lm)[["(Intercept)"]] + coef(categorical_lm)[["xd"]],
+    colour = "olivedrab2"
+  ) +
+  geom_crossbar(aes(
+    x, pred, ymin = pred - RMSE, ymax = pred + RMSE
+  ), data = categorical_pred_summary, width = 0.2)
 ```
+, where 
+
+* $x$ describes 4 categories and can take values `('a', 'b', 'c', 'd')`
+* To interpret the coefficients above, Let the categorical variable $x$ be into a dummy variable which takes values `(0, 1, 2, 3)` for `('a', 'b', 'c', 'd')` correspondingly,
+    * average $y$ is higher by 6.9639 units for `b` than for `a`
+    * average $y$ is higher by 4.9750 units for `c` than for `a`
+    * average $y$ is higher by 0.7588 units for `d` than for `a`
+
+### Explain Sim3
+
 ```{r}
 (gathered_model <- sim3 %>%
   data_grid(x1, x2) %>%
