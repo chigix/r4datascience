@@ -1,0 +1,78 @@
+---
+title: "Car Sales Prediction:Keras Example"
+author: "Richard Lea <https://github.com/chigix>"
+date: "2019/1/30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(dplyr)
+library(tibble)
+reticulate::use_python("/usr/bin/python3")
+```
+
+Use Keras to build up a regression-based neural network for predicting the value of a potential car sale based up a cars dataset.
+
+This data processing refers to the post: <https://towardsdatascience.com/keras-with-r-predicting-car-sales-31f48a58bf6>
+
+The dataset is from: <http://www.michaeljgrogan.com/wp-content/uploads/2018/08/cars.csv>
+
+## Dataset
+
+```{r}
+(cars_dataset <- read_csv(
+  "../data-raw/cars.csv", 
+  col_names = c("age", "gender", "average miles driven per day",
+                "personal debt", "monthly income", "sales")
+))
+```
+
+## Data Transformation
+
+### Max-Min Normalization
+
+```{r max-min-normalization}
+# Max-min Normalization
+normalize <- as_tibble(lapply(cars_dataset, function (x) {
+  return ((x - min(x)) /
+          (max(x) - min(x)))
+}))
+
+# Split Normalized DataFrame into testing and training group
+normalize <- mutate(normalize, type = "test")
+normalize[sample(1:nrow(normalize),
+                 0.8 * nrow(normalize)), "type"] = "train"
+normalize
+```
+
+## Keras Model Configuration
+
+```{r}
+model <- keras::keras_model_sequential()
+model %>%
+  keras::layer_dense(
+    units = 12, activation = "relu",
+    kernel_initializer = "RandomNormal", input_shape = c(6)
+  ) %>%
+  keras::layer_dense(
+    units = 8, activation = "relu"
+  ) %>%
+  keras::layer_dense(
+    units = 8, activation = "linear"
+  )
+summary(model)
+```
+```{r}
+keras::compile(
+  model,
+  loss = "mean_squared_error",
+  optimizer = "adam",
+  metrics = c("mae")
+)
+```
+
+## Fitting the Model
+
+
