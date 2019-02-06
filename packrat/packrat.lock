@@ -1,6 +1,6 @@
 PackratFormat: 1.4
 PackratVersion: 0.4.9.3
-RVersion: 3.5.1
+RVersion: 3.5.2
 Repos: CRAN=https://mran.microsoft.com/snapshot/2018-09-30
 
 Package: BH
@@ -32,6 +32,23 @@ Source: CRAN
 Version: 6.0-0
 Hash: a7db87aa61fe9f0a8c229549cb10fee6
 Requires: dplyr
+
+Package: R.methodsS3
+Source: CRAN
+Version: 1.7.1
+Hash: 99f841ba1614c005e6672c5fb01b352a
+
+Package: R.oo
+Source: CRAN
+Version: 1.22.0
+Hash: c37ded09136c4ae98b9c73cf42dee3c8
+Requires: R.methodsS3
+
+Package: R.utils
+Source: CRAN
+Version: 2.7.0
+Hash: 9f29899983c73318af90c97bca2e22ab
+Requires: R.methodsS3, R.oo
 
 Package: R6
 Source: CRAN
@@ -151,6 +168,12 @@ Package: colorspace
 Source: CRAN
 Version: 1.3-2
 Hash: 0bf8618b585fa98eb23414cd3ab95118
+
+Package: config
+Source: CRAN
+Version: 0.3
+Hash: 00b1a8d447124dc267d0bd36796b4024
+Requires: yaml
 
 Package: crayon
 Source: CRAN
@@ -313,6 +336,12 @@ Source: CRAN
 Version: 1.5
 Hash: 9c51936d8dd00b2f1d4fe9d10499694c
 
+Package: keras
+Source: CRAN
+Version: 2.2.0
+Hash: b08efe5d727af0070ac0388927b18a4a
+Requires: R6, magrittr, reticulate, tensorflow, tfruns, zeallot
+
 Package: knitr
 Source: CRAN
 Version: 1.20
@@ -389,6 +418,12 @@ Package: packrat
 Source: CRAN
 Version: 0.4.9-3
 Hash: 03fb817297975f1da0d1b774b47620b3
+
+Package: pdftools
+Source: CRAN
+Version: 1.8
+Hash: c99082e45674f426db5d076419453518
+Requires: Rcpp
 
 Package: pillar
 Source: CRAN
@@ -471,6 +506,12 @@ Version: 1.4.3
 Hash: a08472524968be4e233b4c8d0ae5aef1
 Requires: Rcpp, plyr, stringr
 
+Package: reticulate
+Source: CRAN
+Version: 1.10
+Hash: e285b294fba6730297085995613d352f
+Requires: Rcpp, jsonlite
+
 Package: rgexf
 Source: CRAN
 Version: 0.15.3
@@ -547,6 +588,20 @@ Version: 1.3.1
 Hash: 9f417a1d899ed1f080942ab36998e8b5
 Requires: glue, magrittr, stringi
 
+Package: tensorflow
+Source: CRAN
+Version: 1.9
+Hash: d6697c50c5d6b0368787717c8a9538a4
+Requires: config, jsonlite, processx, reticulate, rstudioapi, tfruns,
+    yaml
+
+Package: tfruns
+Source: CRAN
+Version: 1.4
+Hash: 50c6661cfd0bcd70a03d565b6ff78844
+Requires: base64enc, config, jsonlite, magrittr, reticulate, rlang,
+    rstudioapi, tidyselect, whisker, yaml
+
 Package: tibble
 Source: CRAN
 Version: 1.4.2
@@ -613,6 +668,12 @@ Source: CRAN
 Version: 2.1.2
 Hash: d534108bcd5f34ec73e9eb523751ba20
 
+Package: wordcloud2
+Source: CRAN
+Version: 0.2.1
+Hash: e33b8fee35828bcf708b8a203b0b725e
+Requires: base64enc, htmlwidgets
+
 Package: xfun
 Source: CRAN
 Version: 0.3
@@ -639,6 +700,11 @@ Package: yaml
 Source: CRAN
 Version: 2.2.0
 Hash: a5ad5616d83d89f8d84cbf3cf4034e13
+
+Package: zeallot
+Source: CRAN
+Version: 0.1.0
+Hash: 10b2ed48e202b4db421ae864041dc4b2
 
 Package: zoo
 Source: CRAN

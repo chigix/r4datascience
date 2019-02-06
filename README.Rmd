@@ -17,6 +17,12 @@ knitr::opts_chunk$set(
 This repository includes a bunch of amound of codes learned from:
 
 * <https://r4ds.had.co.nz/data-visualisation.html>
+* <https://www.amazon.co.jp/dp/1461471370/ref=cm_sw_em_r_mt_dp_U_UeVmCbNT4X2J0>
+* <https://tensorflow.rstudio.com/>
+
+Some Useful Dataset Related Resources:
+
+* <http://www.sthda.com/english/wiki/r-built-in-data-sets>
 
 ## Environment Installation
 
