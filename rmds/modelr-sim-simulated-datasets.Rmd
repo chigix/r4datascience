@@ -48,9 +48,9 @@ ggplot(sim4) +
 ))
 cat(
   "Generated Points Pairs:",
-  "\nlength(random_models$a): ",
+  "\nlength(random_models$a):",
   length(random_models$a),
-  "\nlength(random_models$b): ",
+  "\nlength(random_models$b):",
   length(random_models$b)
 )
 random_models %>%
@@ -263,9 +263,11 @@ and describe all the data generations of each entry in the matrix above as
 $$
 \begin{align}
 y_{ji} &= \overline{\text{Category_i}} + \epsilon_{ji} \\
-       &= (\mu + \tau_i) + \epsilon_{ji}  \\
-\end{align}
-\\
+       &= (\mu + \tau_i) + \epsilon_{ji}
+       ~~~, \epsilon_{ji} \text{ denotes residuals}
+       \\
+\end{align} \\
+
 \Rightarrow
 \begin{cases}
 \text{category_1:} & y_{j1} = \mu + \tau_1 + \epsilon_{j1} \\
@@ -318,8 +320,9 @@ where,
 ```{r linear-regression-for-categorical-variable}
 summary(categorical_lm <- lm(y ~ x, data = sim2))
 # Calculate the Root Mean Squared Error(RMSE)
+RMSE <- sqrt(sum(residuals(categorical_lm) ^ 2) / df.residual(categorical_lm))
 cat("RMSE: ", 
-    RMSE = sqrt(sum(residuals(categorical_lm) ^ 2) / df.residual(categorical_lm))
+    RMSE = RMSE
 )
 (categorical_pred_summary <- sim2 %>%
   data_grid(x) %>%
