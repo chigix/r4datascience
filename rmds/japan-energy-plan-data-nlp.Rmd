@@ -1,0 +1,142 @@
+---
+title: "日本エネルギー基本計画: NLP Case"
+author: "Richard Lea <https://github.com/chigix>"
+date: "2019/2/5"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(stringr)
+library(dplyr)
+reticulate::use_python("/usr/bin/python3")
+janome <- reticulate::import("janome")
+gensim <- reticulate::import("gensim")
+basic_tokenizer <- janome$tokenizer$Tokenizer()
+```
+
+## Dataset
+
+```{r reading-data}
+japan_energy_plan <- read_rds("../data/japan_energy_plan.rds")
+japan_energy_plan[3:10]
+```
+
+## Wordcloud Visualization
+
+```{r basic-word-cloud}
+wakati_summary <- tibble(
+  word = basic_tokenizer$tokenize(
+                  str_c(
+                    japan_energy_plan[3:length(japan_energy_plan)],
+                    collapse = ""
+                  ),
+                  wakati = TRUE
+                )
+) %>% group_by(word) %>%
+  summarise(freq = n()) %>% ungroup() %>%
+  filter(! word %in% c("です", "する", "ある", "、", "。", "「", "」")) %>%
+  filter(rank(freq) > n() - 400)
+wordcloud2::wordcloud2(wakati_summary, size = 2)
+```
+
+Janome で提供されている TokenFilter の参考サイト：<https://ohke.hateblo.jp/entry/2017/11/02/230000>
+```{r noun-cloud}
+analyzer <- janome$analyzer$Analyzer(
+  tokenizer = basic_tokenizer,
+  token_filters = c(
+    janome$tokenfilter$POSKeepFilter(c("名詞")),
+    janome$tokenfilter$LowerCaseFilter()
+  )
+)
+tibble(
+  word = reticulate::iterate(
+    analyzer$analyze(str_c(
+      japan_energy_plan[3:length(japan_energy_plan)],
+      collapse = ""
+    )),
+    return
+  ) %>%
+    purrr::discard(~str_detect(.$part_of_speech, fixed(",非自立"))) %>%
+    purrr::discard(~str_detect(.$part_of_speech, fixed(",代名詞"))) %>%
+    purrr::discard(~str_detect(.$part_of_speech, fixed(",数"))) %>%
+    purrr::map_chr(~.$surface)
+) %>% group_by(word) %>%
+  summarise(freq = n()) %>% ungroup() %>%
+  wordcloud2::wordcloud2(size = 1.6)
+```
+
+## Noun Occurrence Counting
+
+```{r list-high-rank-nouns}
+analyzer <- janome$analyzer$Analyzer(
+  tokenizer = basic_tokenizer,
+  token_filters = c(
+    janome$tokenfilter$POSKeepFilter(c("名詞")),
+    janome$tokenfilter$POSStopFilter(c("名詞,代名詞", "名詞,非自立", "名詞,数")),
+    janome$tokenfilter$LowerCaseFilter(),
+    janome$tokenfilter$TokenCountFilter()
+  )
+)
+a <- reticulate::iterate(
+  analyzer$analyze(str_c(
+    japan_energy_plan[3:length(japan_energy_plan)],
+    collapse = ""
+  )),
+  return
+)
+tibble(
+  word = purrr::map_chr(a, 1),
+  freq = purrr::map_int(a, 2)
+) %>% arrange(desc(freq))
+```
+
+## Collocation Detection Experiments
+
+Learned from:
+
+* <https://radimrehurek.com/gensim/models/phrases.html>
+
+By the way, the [Official Tutorial](https://radimrehurek.com/gensim/tutorial.html) could be useful later.
+
+Some useful resources related to this section:
+
+* <http://ailaby.com/phrases/>
+
+```{r build-up-corpus-model-through-phraser}
+# Prepare Corpus Data Space
+corpus_phrases <-
+  # Select one section:
+  unlist(strsplit(japan_energy_plan[310:325], "。")) %>%
+  # Split Words through Janome
+  purrr::map(~basic_tokenizer$tokenize(., wakati = TRUE))
+
+corpus_phrases[1:2] #Preview a part of the corpus
+
+# Learning Corpus through Phrases
+(
+  phrases_model <- gensim$models$phrases$Phrases(
+    # Filter Words Pair if occurance lower than once
+    # Filter the co-occurance with NPMI score lower than 1
+    corpus_phrases, min_count = 1, threshold = 1
+  )
+)
+# A smaller functional Model Exported from phrases_model
+(bi_grams <- gensim$models$phrases$Phraser(phrases_model))
+```
+
+About the NPMI Score API:
+<https://radimrehurek.com/gensim/models/phrases.html#gensim.models.phrases.npmi_scorer>
+
+About the phrases detection API:
+<https://radimrehurek.com/gensim/models/phrases.html#gensim.models.phrases.Phrases>
+
+```{r test-potential-phrases}
+bigram_results <- reticulate::iterate(
+  reticulate::py_get_item(bi_grams, corpus_phrases),
+  return
+)
+bigram_results[1:2]
+```
+
