@@ -1,0 +1,137 @@
+---
+title: "涼宮ハルヒの憂鬱:形態素解析ケース"
+author: "Richard Lea <https://github.com/chigix>"
+date: "2019/2/4"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(stringr)
+library(purrr)
+library(tibble)
+library(dplyr)
+reticulate::use_python("/usr/bin/python3")
+janome <- reticulate::import("janome")
+```
+
+About the graphic logic through Graphviz:
+<https://graphviz.gitlab.io/gallery/>
+
+About the dependency part in the sentences:
+* <https://nlp.stanford.edu/software/nndep.html>
+
+## Dataset
+
+```{r}
+(sentences <- read_rds("../data/suzumiyaharuhi-case.rds"))[1:4]
+```
+
+## Configure Analyzer
+
+```{r configuration}
+analyzer <- janome$analyzer$Analyzer(
+  tokenizer = janome$tokenizer$Tokenizer(),
+  token_filters = c(
+    # 複合名詞をサポート
+    janome$tokenfilter$CompoundNounFilter(),
+    janome$tokenfilter$POSStopFilter(c("記号")),
+    janome$tokenfilter$LowerCaseFilter()
+  )
+)
+
+# Test
+reticulate::iterate(analyzer$analyze(text = sentences[26]), summary)
+```
+
+## Tidy Sentence Parts Data
+
+コンマ区切りの情報について、<http://eneprog.blogspot.com/2018/06/janomepython.html> を参考しました：
+```{r define-tibble-util}
+tibble_tokens <- function(tokens) {
+  tibble(
+    "表層形" = map_chr(tokens, ~.$surface),
+    "POS" = map_chr(tokens, ~.$part_of_speech),
+    "活用型" = map_chr(tokens, ~.$infl_type),
+    "活用形" = map_chr(tokens, ~.$infl_form),
+    "原形" = map_chr(tokens, ~.$base_form),
+    "読み" = map_chr(tokens, ~.$reading),
+    "発音" = map_chr(tokens, ~.$phonetic)
+  ) %>%
+    tidyr::separate(POS, 
+                    into = c("品詞", "品詞細分類1", "品詞細分類2", "品詞細分類3"),
+                    sep = ",",
+                    fill = "right",
+                    remove = T)
+}
+```
+
+```{r data-transformation}
+mp_sentences <- vector("list", length(sentences))
+for (i in seq_along(sentences)) {
+  tokens <- analyzer$analyze(sentences[i])
+  mp_sentences[[i]] <- reticulate::iterate(tokens, return)
+}
+tibble_tokens(mp_sentences[[26]])
+```
+
+## Verbs Filtering
+
+```{r filter-verbs}
+unlist(mp_sentences) %>%
+  purrr::keep(~startsWith(.$part_of_speech, "動詞")) %>%
+  tibble_tokens()
+```
+
+```{r generate-base-form-table}
+unlist(mp_sentences) %>%
+  purrr::keep(~startsWith(.$part_of_speech, "動詞")) %>%
+  purrr::map(~.$base_form) %>% as_vector() %>%
+  unique()
+```
+
+## Nouns Filtering
+
+```{r}
+unlist(mp_sentences) %>%
+  purrr::keep(~startsWith(.$part_of_speech, "名詞,サ変接続")) %>%
+  purrr::map(~.$base_form) %>% as_vector() %>%
+  unique()
+```
+
+## Collocation Detection
+
+「の」で連結されている名詞句抽出
+
+```{r}
+tmp_phrase <- NA
+detected_phrases <- NA
+for (sentence_index in seq_along(mp_sentences)) {
+  tokens <- mp_sentences[[sentence_index]]
+  for (token_index in seq_along(tokens)) {
+    token <- tokens[[token_index]]
+    if (
+      startsWith(token$part_of_speech, "助詞,連体化") &
+      identical(token$base_form, "の") &
+      length(tmp_phrase) > 0
+    ) tmp_phrase <- c(tmp_phrase, token$surface)
+    else if (startsWith(token$part_of_speech, "名詞"))
+      tmp_phrase <- (function()
+        if (anyNA(tmp_phrase)) c(token$surface)
+        else c(tmp_phrase, token$surface)
+      )()
+    else {
+      if (length(tmp_phrase) > 1)
+        detected_phrases <- 
+          c(detected_phrases, str_c(tmp_phrase, collapse = "_"))
+      tmp_phrase <- NA
+    }
+  }
+}
+purrr::discard(detected_phrases, ~is.na(.))
+```
+
+名詞の連接（連続して出現する名詞）を最長一致で抽出
+
+
