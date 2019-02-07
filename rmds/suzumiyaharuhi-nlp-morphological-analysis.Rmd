@@ -20,6 +20,7 @@ About the graphic logic through Graphviz:
 <https://graphviz.gitlab.io/gallery/>
 
 About the dependency part in the sentences:
+
 * <https://nlp.stanford.edu/software/nndep.html>
 
 ## Dataset
@@ -118,7 +119,10 @@ for (sentence_index in seq_along(mp_sentences)) {
     ) tmp_phrase <- c(tmp_phrase, token$surface)
     else if (startsWith(token$part_of_speech, "名詞"))
       tmp_phrase <- (function()
-        if (anyNA(tmp_phrase)) c(token$surface)
+        if (anyNA(tmp_phrase))
+          c(token$surface)
+        else if (!identical(tail(tmp_phrase, n=1), "の"))
+          c(token$surface)
         else c(tmp_phrase, token$surface)
       )()
     else {
@@ -134,4 +138,76 @@ purrr::discard(detected_phrases, ~is.na(.))
 
 名詞の連接（連続して出現する名詞）を最長一致で抽出
 
+```{r}
+basic_tokenizer <- janome$tokenizer$Tokenizer()
+detected_phrases <- NULL
+tmp_phrase <- NULL
+tokens <- purrr::map(
+  sentences, function(sentence) {
+    basic_tokenizer$tokenize(sentence)
+  }
+) %>%
+  unlist() %>% walk(function(token) {
+    if (startsWith(token$part_of_speech, "名詞")) {
+      tmp_phrase <<- c(tmp_phrase, token$surface)
+    }
+    else {
+      if (length(tmp_phrase) > 1)
+        detected_phrases <<- c(detected_phrases, str_c(tmp_phrase, collapse = "_"))
+      tmp_phrase <<- NULL
+    }
+  })
+detected_phrases
+```
 
+## Tokens Counting
+
+```{r complet-tokens-count}
+count_summary <- tibble(
+  word = unlist(mp_sentences) %>%
+    purrr::map(~.$surface) %>% unlist()
+) %>% group_by(word) %>% count()
+count_summary %>% arrange(desc(n))
+# Plotting
+ggplot2::ggplot(
+  arrange(count_summary, desc(n)) %>% ungroup() %>% 
+    head(n = 10L) %>% mutate(
+      word = forcats::fct_inorder(word)
+    )
+) +
+  ggplot2::geom_bar(ggplot2::aes(x = factor(word), y = n), stat = "identity") +
+  ggplot2::ylab("出現頻度数")
+```
+
+### Zipf's Law
+
+* <https://en.wikipedia.org/wiki/Zipf%27s_law>
+
+```{r zipfs-law-plot}
+arrange(count_summary, desc(n)) %>% ungroup() %>%
+  mutate(rank = row_number()) %>%
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(rank, n)) +
+  # convert to log based coordinate system
+  ggplot2::scale_x_log10(
+    breaks = scales::trans_breaks("log10", function(x)  10 ^ x),
+    labels = scales::trans_format("log10", scales::math_format(10 ^ .x))
+  ) +
+  ggplot2::scale_y_log10(
+    breaks = scales::trans_breaks("log10", function(x)  10 ^ x),
+    labels = scales::trans_format("log10", scales::math_format(10 ^ .x))
+  ) +
+  ggplot2::labs(x = "出現度順位", y = "出現頻度")
+```
+
+## Occurance ~ WordTypes
+
+```{r}
+count_summary <- unlist(mp_sentences) %>% tibble_tokens() %>%
+  group_by(`表層形`, `品詞`) %>%
+  count() %>% ungroup()
+count_summary %>% arrange(desc(n))
+ggplot2::ggplot(ungroup(count_summary) %>% filter(n <= 20)) +
+  ggplot2::geom_histogram(ggplot2::aes(n, fill = `品詞`), binwidth = 1) +
+  ggplot2::labs(x = "出現頻度", y = "単語の種類数")
+```
