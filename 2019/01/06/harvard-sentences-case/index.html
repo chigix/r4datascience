@@ -13,7 +13,7 @@
 <meta property="og:site_name" content="R4DataScience Cases Gallery">
 <meta property="og:description" content="Dataset head(sentences) ## [1] &amp;quot;　うすらぼんやりとしているうちに学区内の県立高校へと無難に進学した俺が最初に後悔したのはこの学校がえらい山の上にあることで、春だってのに大汗をかきながら延々と続く坂道を登りつつ手軽なハイキング気分をいやいや満喫している最中であった。&amp;quot;">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-02-06T17:51:37.270Z">
+<meta property="og:updated_time" content="2019-02-07T07:47:33.552Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="stringr::sentences data case">
 <meta name="twitter:description" content="Dataset head(sentences) ## [1] &amp;quot;　うすらぼんやりとしているうちに学区内の県立高校へと無難に進学した俺が最初に後悔したのはこの学校がえらい山の上にあることで、春だってのに大汗をかきながら延々と続く坂道を登りつつ手軽なハイキング気分をいやいや満喫している最中であった。&amp;quot;">
@@ -169,12 +169,12 @@
 <pre><code>## character(0)</code></pre>
 <pre class="r"><code># View Sentences containing a color
 str_view_all(str_subset(sentences, regexp), regexp)</code></pre>
-<div id="htmlwidget-5b38cd76b830413517e7" style="width:960px;height:100%;" class="str_view html-widget"></div>
-<script type="application/json" data-for="htmlwidget-5b38cd76b830413517e7">{"x":{"html":"<ul>\n  <li><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-07631a9cef4758181623" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-07631a9cef4758181623">{"x":{"html":"<ul>\n  <li><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
 <pre class="r"><code># View Sentences with more than one color
 str_view_all(sentences[str_count(sentences, regexp) &gt; 1], regexp)</code></pre>
-<div id="htmlwidget-8958a0ddfde62f645206" style="width:960px;height:100%;" class="str_view html-widget"></div>
-<script type="application/json" data-for="htmlwidget-8958a0ddfde62f645206">{"x":{"html":"<ul>\n  <li><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-f2c74a10fa23a3701995" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-f2c74a10fa23a3701995">{"x":{"html":"<ul>\n  <li><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
 <pre class="r"><code>str_extract_all(sentences[str_count(sentences, regexp) &gt; 1], regexp)</code></pre>
 <pre><code>## list()</code></pre>
 <pre class="r"><code>str_extract_all(sentences[str_count(sentences, regexp) &gt; 1], regexp, simplify = T)</code></pre>
