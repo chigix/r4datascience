@@ -320,9 +320,9 @@ where,
 ```{r linear-regression-for-categorical-variable}
 summary(categorical_lm <- lm(y ~ x, data = sim2))
 # Calculate the Root Mean Squared Error(RMSE)
-RMSE <- sqrt(sum(residuals(categorical_lm) ^ 2) / df.residual(categorical_lm))
-cat("RMSE: ", 
-    RMSE = RMSE
+cat("RMSE: ",
+    RMSE <-
+      sqrt(sum(residuals(categorical_lm) ^ 2) / df.residual(categorical_lm))
 )
 (categorical_pred_summary <- sim2 %>%
   data_grid(x) %>%
@@ -350,6 +350,7 @@ sim2 %>%
     colour = "olivedrab2"
   ) +
   geom_crossbar(aes(
+    # Visualize the RMSE
     x, pred, ymin = pred - RMSE, ymax = pred + RMSE
   ), data = categorical_pred_summary, width = 0.2)
 ```
@@ -357,9 +358,9 @@ sim2 %>%
 
 * $x$ describes 4 categories and can take values `('a', 'b', 'c', 'd')`
 * To interpret the coefficients above, Let the categorical variable $x$ be into a dummy variable which takes values `(0, 1, 2, 3)` for `('a', 'b', 'c', 'd')` correspondingly,
-    * average $y$ is higher by 6.9639 units for `b` than for `a`
-    * average $y$ is higher by 4.9750 units for `c` than for `a`
-    * average $y$ is higher by 0.7588 units for `d` than for `a`
+    * average $y$ is higher by 6.9639 units for `b` than for `a`, all other variables held constant.
+    * average $y$ is higher by 4.9750 units for `c` than for `a`, all other variables held constant.
+    * average $y$ is higher by 0.7588 units for `d` than for `a`, all other variables held constant.
 
 ### Explain Sim3
 
