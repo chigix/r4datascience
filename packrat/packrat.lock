@@ -60,6 +60,18 @@ Source: CRAN
 Version: 1.1-2
 Hash: c0d56cd15034f395874c870141870c25
 
+Package: RMariaDB
+Source: CRAN
+Version: 1.0.6
+Hash: 8b9580c2c4737013527a748b8f356cb0
+Requires: BH, DBI, Rcpp, bit64, hms, plogr
+
+Package: RSQLite
+Source: CRAN
+Version: 2.1.1
+Hash: 5ce488773a12f7ac51adea6ba247624d
+Requires: BH, DBI, Rcpp, bit64, blob, memoise, pkgconfig, plogr
+
 Package: Rcpp
 Source: CRAN
 Version: 0.12.18
@@ -119,10 +131,27 @@ Version: 0.2.2
 Hash: d1189679aec436c9280c498e5d01eaa8
 Requires: Rcpp, bindr, plogr
 
+Package: bit
+Source: CRAN
+Version: 1.1-14
+Hash: 704eb98fa9be263c95d00df4b2a448dd
+
+Package: bit64
+Source: CRAN
+Version: 0.9-7
+Hash: 4b195615d19ba49c114eb04e09e30a96
+Requires: bit
+
 Package: bitops
 Source: CRAN
 Version: 1.0-6
 Hash: 67d0775189fd0041d95abca618c5c07e
+
+Package: blob
+Source: CRAN
+Version: 1.1.1
+Hash: 532700d8073e660dce40a984900bc647
+Requires: prettyunits
 
 Package: brew
 Source: CRAN
@@ -169,6 +198,11 @@ Source: CRAN
 Version: 1.3-2
 Hash: 0bf8618b585fa98eb23414cd3ab95118
 
+Package: commonmark
+Source: CRAN
+Version: 1.5
+Hash: 432a16a9967055dad6b39f1c14fd6b2c
+
 Package: config
 Source: CRAN
 Version: 0.3
@@ -191,6 +225,12 @@ Version: 1.2.2
 Hash: f09ea2f1a5c31d86b061d7121fab5db8
 Requires: DBI, R6, assertthat, dplyr, glue, purrr, rlang, tibble,
     tidyselect
+
+Package: desc
+Source: CRAN
+Version: 1.2.0
+Hash: a1fd2baa29d4954951e3d1816deab6af
+Requires: R6, assertthat, crayon, rprojroot
 
 Package: digest
 Source: CRAN
@@ -331,6 +371,12 @@ Source: CRAN
 Version: 0.3.15
 Hash: 8033115a3e00ec516e3fc97240b1649f
 
+Package: jsonld
+Source: CRAN
+Version: 2.0
+Hash: 60b5b1a7d08a7c7c1910adf8ab284ce8
+Requires: V8, curl, jsonlite
+
 Package: jsonlite
 Source: CRAN
 Version: 1.5
@@ -386,6 +432,12 @@ Version: 0.8
 Hash: 045d7c594d503b41f1c28946d076c8aa
 Requires: mime
 
+Package: memoise
+Source: CRAN
+Version: 1.1.0
+Hash: 410fcd334bc626db100237cc1370f2e9
+Requires: digest
+
 Package: mime
 Source: CRAN
 Version: 0.5
@@ -431,10 +483,22 @@ Version: 1.3.0
 Hash: 3e43f774fa6dfba877caca1aebbeaa6a
 Requires: cli, crayon, fansi, rlang, utf8
 
+Package: pkgbuild
+Source: CRAN
+Version: 1.0.1
+Hash: 46e8a861530ef893985b16f2892644b6
+Requires: R6, callr, crayon, desc, rprojroot, withr
+
 Package: pkgconfig
 Source: CRAN
 Version: 2.0.2
 Hash: b0fd6ed908e150b77e5f00c6478bd58c
+
+Package: pkgload
+Source: CRAN
+Version: 1.0.0
+Hash: 4e38eacecfe8616754a63c876e63142b
+Requires: desc, pkgbuild, rlang, rprojroot, rstudioapi, withr
 
 Package: plogr
 Source: CRAN
@@ -446,6 +510,12 @@ Source: CRAN
 Version: 1.8.4
 Hash: 05d65ee369a267f0d0c56604000c69b5
 Requires: Rcpp
+
+Package: prettyunits
+Source: CRAN
+Version: 1.0.2
+Hash: 49286102a855640daaa38eafe8b1ec30
+Requires: assertthat, magrittr
 
 Package: processx
 Source: CRAN
@@ -477,6 +547,12 @@ Version: 0.2.5
 Hash: 8b0c16db10c7e20b70cd37779a673a8b
 Requires: magrittr, rlang, tibble
 
+Package: rdflib
+Source: CRAN
+Version: 0.1.0
+Hash: 781f55d7044fef7da7f1519154c52ed4
+Requires: jsonld, readr, redland, stringi
+
 Package: readr
 Source: CRAN
 Version: 1.1.1
@@ -488,6 +564,12 @@ Source: CRAN
 Version: 1.1.0
 Hash: 554ff60fff61568d68899b4a168c1562
 Requires: Rcpp, cellranger, tibble
+
+Package: redland
+Source: CRAN
+Version: 1.0.17-10
+Hash: 82fe5c34cd9c006e55203909ad3cd326
+Requires: roxygen2
 
 Package: rematch
 Source: CRAN
@@ -529,6 +611,13 @@ Version: 1.10
 Hash: 02f1aac33000c63986c6b5585e36e7ae
 Requires: base64enc, evaluate, htmltools, jsonlite, knitr, mime,
     rprojroot, stringr, tinytex, yaml
+
+Package: roxygen2
+Source: CRAN
+Version: 6.1.0
+Hash: 92a56f03051cf532b3e5b61095854167
+Requires: R6, Rcpp, brew, commonmark, desc, digest, pkgload, purrr,
+    stringi, stringr, xml2
 
 Package: rprojroot
 Source: CRAN
