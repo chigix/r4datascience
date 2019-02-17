@@ -6,17 +6,17 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="description" content="Dataset head(sentences) ## [1] &amp;quot;　うすらぼんやりとしているうちに学区内の県立高校へと無難に進学した俺が最初に後悔したのはこの学校がえらい山の上にあることで、春だってのに大汗をかきながら延々と続く坂道を登りつつ手軽なハイキング気分をいやいや満喫している最中であった。&amp;quot;">
+    <meta name="description" content="Dataset head(sentences) ## [1] &amp;quot;The birch canoe slid on the smooth planks.&amp;quot;  ## [2] &amp;quot;Glue the sheet to the dark blue background.&amp;quot; ## [3] &amp;quot;It&apos;s easy to tell the depth of a">
 <meta property="og:type" content="article">
 <meta property="og:title" content="stringr::sentences data case">
 <meta property="og:url" content="https://chigix.github.io/r4datascience/2019/01/06/harvard-sentences-case/index.html">
 <meta property="og:site_name" content="R4DataScience Cases Gallery">
-<meta property="og:description" content="Dataset head(sentences) ## [1] &amp;quot;　うすらぼんやりとしているうちに学区内の県立高校へと無難に進学した俺が最初に後悔したのはこの学校がえらい山の上にあることで、春だってのに大汗をかきながら延々と続く坂道を登りつつ手軽なハイキング気分をいやいや満喫している最中であった。&amp;quot;">
+<meta property="og:description" content="Dataset head(sentences) ## [1] &amp;quot;The birch canoe slid on the smooth planks.&amp;quot;  ## [2] &amp;quot;Glue the sheet to the dark blue background.&amp;quot; ## [3] &amp;quot;It&apos;s easy to tell the depth of a">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-02-08T01:55:27.282Z">
+<meta property="og:updated_time" content="2019-02-13T18:47:53.414Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="stringr::sentences data case">
-<meta name="twitter:description" content="Dataset head(sentences) ## [1] &amp;quot;　うすらぼんやりとしているうちに学区内の県立高校へと無難に進学した俺が最初に後悔したのはこの学校がえらい山の上にあることで、春だってのに大汗をかきながら延々と続く坂道を登りつつ手軽なハイキング気分をいやいや満喫している最中であった。&amp;quot;">
+<meta name="twitter:description" content="Dataset head(sentences) ## [1] &amp;quot;The birch canoe slid on the smooth planks.&amp;quot;  ## [2] &amp;quot;Glue the sheet to the dark blue background.&amp;quot; ## [3] &amp;quot;It&apos;s easy to tell the depth of a">
     
     
         
@@ -39,6 +39,7 @@
     <title>stringr::sentences data case</title>
     <!-- styles -->
     <link rel="stylesheet" href="/r4datascience/css/style.css">
+    <link rel="stylesheet" href="/r4datascience/lib/wordcloud2/wordcloud.css">
     <!-- persian styles -->
     
       <link rel="stylesheet" href="/r4datascience/css/rtl.css">
@@ -145,12 +146,12 @@
 <div id="dataset" class="section level2">
 <h2>Dataset</h2>
 <pre class="r"><code>head(sentences)</code></pre>
-<pre><code>## [1] &quot;　うすらぼんやりとしているうちに学区内の県立高校へと無難に進学した俺が最初に後悔したのはこの学校がえらい山の上にあることで、春だってのに大汗をかきながら延々と続く坂道を登りつつ手軽なハイキング気分をいやいや満喫している最中であった。&quot;                                                                                                                                                                                                      
-## [2] &quot;これから三年間も毎日こんな山登りを朝っぱらからせにゃならんのかと思うと暗澹たる気分になるのだが、ひょっとしたらギリギリまで寝ていたおかげで自然と早足を強いられているのかもしれず、ならばあと十分でも早起きすればゆっくり歩けるわけだしそうキツイことでもないかと考えたりするものの、起きる間際の十分の睡眠がどれほど貴重かを思えば、そんなことは不可能で、つまり結局俺は朝の運動を継続しなければならないだろうと確信し暗澹たる気分が倍加した。&quot;
-## [3] &quot;&quot;                                                                                                                                                                                                                                                                                                                                                                                                                                              
-## [4] &quot;　そんなわけで、無駄に広い体育館で入学式がおこなわれている間、俺は新しい学び舎での希望と不安に満ちた学園生活に思いをはせている新入生特有の顔つきとは関係なく、ただ暗い顔をしていた。&quot;                                                                                                                                                                                                                                                          
-## [5] &quot;同じ中学から来ている奴がかなりの量にのぼっていたし、うち何人かは結構仲のよかった連中なので友人のあてに困ることはなかったが。&quot;                                                                                                                                                                                                                                                                                                                  
-## [6] &quot;&quot;</code></pre>
+<pre><code>## [1] &quot;The birch canoe slid on the smooth planks.&quot; 
+## [2] &quot;Glue the sheet to the dark blue background.&quot;
+## [3] &quot;It's easy to tell the depth of a well.&quot;     
+## [4] &quot;These days a chicken leg is a rare dish.&quot;   
+## [5] &quot;Rice is often served in round bowls.&quot;       
+## [6] &quot;The juice of lemons makes fine punch.&quot;</code></pre>
 </div>
 <div id="color-seeker" class="section level2">
 <h2>Color Seeker</h2>
@@ -160,27 +161,104 @@
 ))</code></pre>
 <pre><code>## [1] &quot;red|orange|yellow|green|blue|purple&quot;</code></pre>
 <pre class="r"><code>str_subset(sentences, regexp)</code></pre>
-<pre><code>## character(0)</code></pre>
+<pre><code>##  [1] &quot;Glue the sheet to the dark blue background.&quot;       
+##  [2] &quot;Two blue fish swam in the tank.&quot;                   
+##  [3] &quot;The colt reared and threw the tall rider.&quot;         
+##  [4] &quot;The wide road shimmered in the hot sun.&quot;           
+##  [5] &quot;See the cat glaring at the scared mouse.&quot;          
+##  [6] &quot;A wisp of cloud hung in the blue air.&quot;             
+##  [7] &quot;Leaves turn brown and yellow in the fall.&quot;         
+##  [8] &quot;He ordered peach pie with ice cream.&quot;              
+##  [9] &quot;Pure bred poodles have curls.&quot;                     
+## [10] &quot;The spot on the blotter was made by green ink.&quot;    
+## [11] &quot;Mud was spattered on the front of his white shirt.&quot;
+## [12] &quot;The sofa cushion is red and of light weight.&quot;      
+## [13] &quot;The sky that morning was clear and bright blue.&quot;   
+## [14] &quot;Torn scraps littered the stone floor.&quot;             
+## [15] &quot;The doctor cured him with these pills.&quot;            
+## [16] &quot;The new girl was fired today at noon.&quot;             
+## [17] &quot;The third act was dull and tired the players.&quot;     
+## [18] &quot;A blue crane is a tall wading bird.&quot;               
+## [19] &quot;Lire wires should be kept covered.&quot;                
+## [20] &quot;It is hard to erase blue or red ink.&quot;              
+## [21] &quot;The wreck occurred by the bank on Main Street.&quot;    
+## [22] &quot;The lamp shone with a steady green flame.&quot;         
+## [23] &quot;The box is held by a bright red snapper.&quot;          
+## [24] &quot;The prince ordered his head chopped off.&quot;          
+## [25] &quot;The houses are built of red clay bricks.&quot;          
+## [26] &quot;The red tape bound the smuggled food.&quot;             
+## [27] &quot;Nine men were hired to dig the ruins.&quot;             
+## [28] &quot;The flint sputtered and lit a pine torch.&quot;         
+## [29] &quot;Hedge apples may stain your hands green.&quot;          
+## [30] &quot;The old pan was covered with hard fudge.&quot;          
+## [31] &quot;The plant grew large and green in the window.&quot;     
+## [32] &quot;The store walls were lined with colored frocks.&quot;   
+## [33] &quot;The purple tie was ten years old.&quot;                 
+## [34] &quot;Bathe and relax in the cool green grass.&quot;          
+## [35] &quot;The clan gathered on each dull night.&quot;             
+## [36] &quot;The lake sparkled in the red hot sun.&quot;             
+## [37] &quot;Mark the spot with a sign painted red.&quot;            
+## [38] &quot;Smoke poured out of every crack.&quot;                  
+## [39] &quot;Serve the hot rum to the tired heroes.&quot;            
+## [40] &quot;The couch cover and hall drapes were blue.&quot;        
+## [41] &quot;He offered proof in the form of a lsrge chart.&quot;    
+## [42] &quot;A man in a blue sweater sat at the desk.&quot;          
+## [43] &quot;The sip of tea revives his tired friend.&quot;          
+## [44] &quot;The door was barred, locked, and bolted as well.&quot;  
+## [45] &quot;A thick coat of black paint covered all.&quot;          
+## [46] &quot;The small red neon lamp went out.&quot;                 
+## [47] &quot;Paint the sockets in the wall dull green.&quot;         
+## [48] &quot;Wake and rise, and step into the green outdoors.&quot;  
+## [49] &quot;The green light in the brown box flickered.&quot;       
+## [50] &quot;He put his last cartridge into the gun and fired.&quot; 
+## [51] &quot;The ram scared the school children off.&quot;           
+## [52] &quot;Tear a thin sheet from the yellow pad.&quot;            
+## [53] &quot;Dimes showered down from all sides.&quot;               
+## [54] &quot;The sky in the west is tinged with orange red.&quot;    
+## [55] &quot;The red paper brightened the dim stage.&quot;           
+## [56] &quot;The hail pattered on the burnt brown grass.&quot;       
+## [57] &quot;The big red apple fell to the ground.&quot;</code></pre>
 <pre class="r"><code>head(str_count(sentences, regexp))</code></pre>
-<pre><code>## [1] 0 0 0 0 0 0</code></pre>
+<pre><code>## [1] 0 1 0 0 0 0</code></pre>
 <pre class="r"><code>head(str_extract(sentences, regexp))</code></pre>
-<pre><code>## [1] NA NA NA NA NA NA</code></pre>
+<pre><code>## [1] NA     &quot;blue&quot; NA     NA     NA     NA</code></pre>
 <pre class="r"><code>str_extract(str_subset(sentences, regexp), regexp)</code></pre>
-<pre><code>## character(0)</code></pre>
+<pre><code>##  [1] &quot;blue&quot;   &quot;blue&quot;   &quot;red&quot;    &quot;red&quot;    &quot;red&quot;    &quot;blue&quot;   &quot;yellow&quot;
+##  [8] &quot;red&quot;    &quot;red&quot;    &quot;green&quot;  &quot;red&quot;    &quot;red&quot;    &quot;blue&quot;   &quot;red&quot;   
+## [15] &quot;red&quot;    &quot;red&quot;    &quot;red&quot;    &quot;blue&quot;   &quot;red&quot;    &quot;blue&quot;   &quot;red&quot;   
+## [22] &quot;green&quot;  &quot;red&quot;    &quot;red&quot;    &quot;red&quot;    &quot;red&quot;    &quot;red&quot;    &quot;red&quot;   
+## [29] &quot;green&quot;  &quot;red&quot;    &quot;green&quot;  &quot;red&quot;    &quot;purple&quot; &quot;green&quot;  &quot;red&quot;   
+## [36] &quot;red&quot;    &quot;red&quot;    &quot;red&quot;    &quot;red&quot;    &quot;blue&quot;   &quot;red&quot;    &quot;blue&quot;  
+## [43] &quot;red&quot;    &quot;red&quot;    &quot;red&quot;    &quot;red&quot;    &quot;green&quot;  &quot;green&quot;  &quot;green&quot; 
+## [50] &quot;red&quot;    &quot;red&quot;    &quot;yellow&quot; &quot;red&quot;    &quot;orange&quot; &quot;red&quot;    &quot;red&quot;   
+## [57] &quot;red&quot;</code></pre>
 <pre class="r"><code># View Sentences containing a color
 str_view_all(str_subset(sentences, regexp), regexp)</code></pre>
-<div id="htmlwidget-15a7390fa08e320e0028" style="width:960px;height:100%;" class="str_view html-widget"></div>
-<script type="application/json" data-for="htmlwidget-15a7390fa08e320e0028">{"x":{"html":"<ul>\n  <li><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-b018b3c5ecce7df964db" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b018b3c5ecce7df964db">{"x":{"html":"<ul>\n  <li>Glue the sheet to the dark <span class='match'>blue<\/span> background.<\/li>\n  <li>Two <span class='match'>blue<\/span> fish swam in the tank.<\/li>\n  <li>The colt rea<span class='match'>red<\/span> and threw the tall rider.<\/li>\n  <li>The wide road shimme<span class='match'>red<\/span> in the hot sun.<\/li>\n  <li>See the cat glaring at the sca<span class='match'>red<\/span> mouse.<\/li>\n  <li>A wisp of cloud hung in the <span class='match'>blue<\/span> air.<\/li>\n  <li>Leaves turn brown and <span class='match'>yellow<\/span> in the fall.<\/li>\n  <li>He orde<span class='match'>red<\/span> peach pie with ice cream.<\/li>\n  <li>Pure b<span class='match'>red<\/span> poodles have curls.<\/li>\n  <li>The spot on the blotter was made by <span class='match'>green<\/span> ink.<\/li>\n  <li>Mud was spatte<span class='match'>red<\/span> on the front of his white shirt.<\/li>\n  <li>The sofa cushion is <span class='match'>red<\/span> and of light weight.<\/li>\n  <li>The sky that morning was clear and bright <span class='match'>blue<\/span>.<\/li>\n  <li>Torn scraps litte<span class='match'>red<\/span> the stone floor.<\/li>\n  <li>The doctor cu<span class='match'>red<\/span> him with these pills.<\/li>\n  <li>The new girl was fi<span class='match'>red<\/span> today at noon.<\/li>\n  <li>The third act was dull and ti<span class='match'>red<\/span> the players.<\/li>\n  <li>A <span class='match'>blue<\/span> crane is a tall wading bird.<\/li>\n  <li>Lire wires should be kept cove<span class='match'>red<\/span>.<\/li>\n  <li>It is hard to erase <span class='match'>blue<\/span> or <span class='match'>red<\/span> ink.<\/li>\n  <li>The wreck occur<span class='match'>red<\/span> by the bank on Main Street.<\/li>\n  <li>The lamp shone with a steady <span class='match'>green<\/span> flame.<\/li>\n  <li>The box is held by a bright <span class='match'>red<\/span> snapper.<\/li>\n  <li>The prince orde<span class='match'>red<\/span> his head chopped off.<\/li>\n  <li>The houses are built of <span class='match'>red<\/span> clay bricks.<\/li>\n  <li>The <span class='match'>red<\/span> tape bound the smuggled food.<\/li>\n  <li>Nine men were hi<span class='match'>red<\/span> to dig the ruins.<\/li>\n  <li>The flint sputte<span class='match'>red<\/span> and lit a pine torch.<\/li>\n  <li>Hedge apples may stain your hands <span class='match'>green<\/span>.<\/li>\n  <li>The old pan was cove<span class='match'>red<\/span> with hard fudge.<\/li>\n  <li>The plant grew large and <span class='match'>green<\/span> in the window.<\/li>\n  <li>The store walls were lined with colo<span class='match'>red<\/span> frocks.<\/li>\n  <li>The <span class='match'>purple<\/span> tie was ten years old.<\/li>\n  <li>Bathe and relax in the cool <span class='match'>green<\/span> grass.<\/li>\n  <li>The clan gathe<span class='match'>red<\/span> on each dull night.<\/li>\n  <li>The lake sparkled in the <span class='match'>red<\/span> hot sun.<\/li>\n  <li>Mark the spot with a sign painted <span class='match'>red<\/span>.<\/li>\n  <li>Smoke pou<span class='match'>red<\/span> out of every crack.<\/li>\n  <li>Serve the hot rum to the ti<span class='match'>red<\/span> heroes.<\/li>\n  <li>The couch cover and hall drapes were <span class='match'>blue<\/span>.<\/li>\n  <li>He offe<span class='match'>red<\/span> proof in the form of a lsrge chart.<\/li>\n  <li>A man in a <span class='match'>blue<\/span> sweater sat at the desk.<\/li>\n  <li>The sip of tea revives his ti<span class='match'>red<\/span> friend.<\/li>\n  <li>The door was bar<span class='match'>red<\/span>, locked, and bolted as well.<\/li>\n  <li>A thick coat of black paint cove<span class='match'>red<\/span> all.<\/li>\n  <li>The small <span class='match'>red<\/span> neon lamp went out.<\/li>\n  <li>Paint the sockets in the wall dull <span class='match'>green<\/span>.<\/li>\n  <li>Wake and rise, and step into the <span class='match'>green<\/span> outdoors.<\/li>\n  <li>The <span class='match'>green<\/span> light in the brown box flicke<span class='match'>red<\/span>.<\/li>\n  <li>He put his last cartridge into the gun and fi<span class='match'>red<\/span>.<\/li>\n  <li>The ram sca<span class='match'>red<\/span> the school children off.<\/li>\n  <li>Tear a thin sheet from the <span class='match'>yellow<\/span> pad.<\/li>\n  <li>Dimes showe<span class='match'>red<\/span> down from all sides.<\/li>\n  <li>The sky in the west is tinged with <span class='match'>orange<\/span> <span class='match'>red<\/span>.<\/li>\n  <li>The <span class='match'>red<\/span> paper brightened the dim stage.<\/li>\n  <li>The hail patte<span class='match'>red<\/span> on the burnt brown grass.<\/li>\n  <li>The big <span class='match'>red<\/span> apple fell to the ground.<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
 <pre class="r"><code># View Sentences with more than one color
 str_view_all(sentences[str_count(sentences, regexp) &gt; 1], regexp)</code></pre>
-<div id="htmlwidget-e1f36e7d100ab04cba3d" style="width:960px;height:100%;" class="str_view html-widget"></div>
-<script type="application/json" data-for="htmlwidget-e1f36e7d100ab04cba3d">{"x":{"html":"<ul>\n  <li><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-604d0de4b4a3f1ac7fb3" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-604d0de4b4a3f1ac7fb3">{"x":{"html":"<ul>\n  <li>It is hard to erase <span class='match'>blue<\/span> or <span class='match'>red<\/span> ink.<\/li>\n  <li>The <span class='match'>green<\/span> light in the brown box flicke<span class='match'>red<\/span>.<\/li>\n  <li>The sky in the west is tinged with <span class='match'>orange<\/span> <span class='match'>red<\/span>.<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
 <pre class="r"><code>str_extract_all(sentences[str_count(sentences, regexp) &gt; 1], regexp)</code></pre>
-<pre><code>## list()</code></pre>
+<pre><code>## [[1]]
+## [1] &quot;blue&quot; &quot;red&quot; 
+## 
+## [[2]]
+## [1] &quot;green&quot; &quot;red&quot;  
+## 
+## [[3]]
+## [1] &quot;orange&quot; &quot;red&quot;</code></pre>
 <pre class="r"><code>str_extract_all(sentences[str_count(sentences, regexp) &gt; 1], regexp, simplify = T)</code></pre>
-<pre><code>## &lt;0 x 0 matrix&gt;</code></pre>
+<pre><code>##      [,1]     [,2] 
+## [1,] &quot;blue&quot;   &quot;red&quot;
+## [2,] &quot;green&quot;  &quot;red&quot;
+## [3,] &quot;orange&quot; &quot;red&quot;</code></pre>
 <pre class="r"><code>sentences[str_count(sentences, regexp) &gt; 1] %&gt;% str_match(regexp)</code></pre>
-<pre><code>##      [,1]</code></pre>
+<pre><code>##      [,1]    
+## [1,] &quot;blue&quot;  
+## [2,] &quot;green&quot; 
+## [3,] &quot;orange&quot;</code></pre>
 </div>
 
 
@@ -230,8 +308,11 @@ $(document).ready(function () {
   window.buildTabsets("TOC");
 });
 </script>
-<!-- dynamically load mathjax for compatibility with self-contained -->
+<script src="/r4datascience/lib/wordcloud2/wordcloud2-all.js"></script>
+<script src="/r4datascience/lib/wordcloud2/hover.js"></script>
+<script src="/r4datascience/lib/wordcloud2/widget.js"></script>
 <script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
