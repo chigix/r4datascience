@@ -59,8 +59,11 @@ $(document).ready(function () {
   window.buildTabsets("TOC");
 });
 </script>
-<!-- dynamically load mathjax for compatibility with self-contained -->
+<%- js('lib/wordcloud2/wordcloud2-all') %>
+<%- js('lib/wordcloud2/hover') %>
+<%- js('lib/wordcloud2/widget') %>
 <script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
