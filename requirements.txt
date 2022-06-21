@@ -3,7 +3,7 @@ Janome==0.3.7
 Keras==2.2.4
 keyring==10.1
 Markdown==3.0.1
-numpy==1.16.1
+numpy==1.22.0
 pandas==0.24.1
 pdfminer.six==20181108
 scikit-learn==0.20.2
